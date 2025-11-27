@@ -1,0 +1,45 @@
+# Credenciais e informações sensíveis
+*.env
+.env.local
+.env.*.local
+credentials.json
+secrets.json
+
+# Logs
+*.log
+logs/
+n8n-logs/
+
+# Arquivos temporários
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node modules (se houver)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Arquivos de backup
+*.bak
+*.backup
+*~
+
+# Arquivos de sistema
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+

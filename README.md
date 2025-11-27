@@ -1,0 +1,311 @@
+# 🤖 Agentes de IA para n8n
+
+Coleção de agentes de IA desenvolvidos para automação de atendimento via WhatsApp usando n8n. Cada agente é especializado em diferentes setores e possui funcionalidades específicas para atender clientes de forma automatizada e inteligente.
+
+## 📋 Índice
+
+- [Visão Geral](#visão-geral)
+- [Agentes Disponíveis](#agentes-disponíveis)
+- [Pré-requisitos](#pré-requisitos)
+- [Instalação](#instalação)
+- [Configuração](#configuração)
+- [Como Usar](#como-usar)
+- [Documentação Detalhada](#documentação-detalhada)
+- [Estrutura de Dados](#estrutura-de-dados)
+- [Troubleshooting](#troubleshooting)
+
+## 🎯 Visão Geral
+
+Estes agentes utilizam tecnologias de IA (GPT-4o-mini) integradas com n8n para criar sistemas de atendimento automatizado via WhatsApp. Eles são capazes de:
+
+- ✅ Receber e processar mensagens de texto, áudio e imagem
+- ✅ Manter contexto de conversas usando memória persistente
+- ✅ Integrar com APIs externas para consultas e cadastros
+- ✅ Gerenciar filas de mensagens para evitar respostas duplicadas
+- ✅ Escalar conversas para atendimento humano quando necessário
+- ✅ Realizar follow-ups automáticos
+
+## 🤖 Agentes Disponíveis
+
+### 1. **Agente Clínico - DaiLaser** (`AI-agent_for_clinical_service.json`)
+Agente especializado em atendimento para clínica de depilação a laser.
+
+**Principais Funcionalidades:**
+- Atendimento personalizado com a personalidade "Dai"
+- Cadastro de clientes na plataforma de agendamento
+- Geração de links de agendamento
+- Consulta de agendamentos existentes
+- Envio de tabela de preços via Canvas
+
+**Documentação:** [docs/agente-clinico-dailaser.md](docs/agente-clinico-dailaser.md)
+
+### 2. **Agente Multi-Setor** (`multi-agent.automation.json`)
+Agente com sistema de múltiplos setores, tickets e base de conhecimento.
+
+**Principais Funcionalidades:**
+- Sistema de tickets de atendimento
+- Base de conhecimento por setor
+- Alteração dinâmica de prompts por setor
+- Limpeza de memória ao alternar setores
+- Geração de links de cadastro
+
+**Documentação:** [docs/agente-multi-setor.md](docs/agente-multi-setor.md)
+
+### 3. **Agente Concessionária** (`multi-worflow_garage.automation.json`)
+Agente especializado em atendimento para concessionárias de veículos.
+
+**Principais Funcionalidades:**
+- Consulta de catálogo de veículos com filtros
+- Cadastro de veículos (apenas para admins)
+- Sistema de avaliação de intenção de compra
+- Encaminhamento automático para vendedores
+- Sistema de follow-up automático (2h, 6h, 24h)
+- Bloqueio de automação quando há interferência humana
+
+**Documentação:** [docs/agente-concessionaria.md](docs/agente-concessionaria.md)
+
+### 4. **Agente Clínico - Stella Amorim** (`simple_agent-service.json`)
+Agente especializado em atendimento para clínica de cirurgia plástica.
+
+**Principais Funcionalidades:**
+- Atendimento personalizado com a personalidade "Amora"
+- Informações sobre procedimentos cirúrgicos
+- Envio de links de vídeos explicativos
+- Envio de e-book com resultados
+- Agendamento de consultas
+- Sistema de escalação após 15 mensagens
+- Bloqueio de automação quando há interferência humana
+
+**Documentação:** [docs/agente-clinico-stella.md](docs/agente-clinico-stella.md)
+
+## 📦 Pré-requisitos
+
+Antes de começar, você precisará de:
+
+1. **n8n** instalado e configurado
+   - Versão recomendada: 1.0+
+   - Acesso via webhook
+
+2. **Credenciais Necessárias:**
+   - OpenAI API Key (para GPT-4o-mini)
+   - Evolution API (para integração WhatsApp)
+   - PostgreSQL (para memória persistente)
+   - Redis (para gerenciamento de filas)
+
+3. **Serviços Externos:**
+   - Evolution API configurada e rodando
+   - Banco de dados PostgreSQL
+   - Instância Redis
+
+## 🚀 Instalação
+
+### Passo 1: Importar Workflows
+
+1. Acesse seu n8n
+2. Vá em **Workflows** → **Import from File**
+3. Selecione o arquivo JSON do agente desejado
+4. O workflow será importado automaticamente
+
+### Passo 2: Configurar Credenciais
+
+Cada agente requer credenciais específicas. Configure-as no n8n:
+
+#### Credenciais Comuns:
+- **OpenAI API**: Para processamento de linguagem natural
+- **PostgreSQL**: Para armazenamento de memória e dados
+- **Redis**: Para gerenciamento de filas
+- **Evolution API**: Para integração WhatsApp
+
+#### Credenciais Específicas por Agente:
+
+**DaiLaser:**
+- API Key da plataforma de agendamento (QuickAI Agenda)
+- Evolution API para instância "DaiaraLaser"
+
+**Multi-Setor:**
+- API Key do sistema de tickets
+- Base de conhecimento API
+
+**Concessionária:**
+- API Key do catálogo de veículos (BancoAI)
+- Evolution API para instância "garage_automation"
+
+**Stella Amorim:**
+- Evolution API para instância "stellaamorim"
+- Gmail OAuth2 (para notificações de erro)
+
+### Passo 3: Configurar Variáveis de Ambiente
+
+Alguns workflows utilizam variáveis de ambiente. Configure no n8n:
+
+```bash
+URL_EVOLUTION=https://sua-evolution-api.com
+```
+
+## ⚙️ Configuração
+
+### 1. Configurar Webhook
+
+Cada workflow possui um webhook único. Configure no Evolution API para enviar mensagens recebidas:
+
+1. Copie a URL do webhook do n8n
+2. Configure no Evolution API como destino de webhooks
+3. Teste enviando uma mensagem
+
+### 2. Configurar Banco de Dados
+
+Crie as tabelas necessárias no PostgreSQL:
+
+#### Tabela de Mensagens (comum a todos):
+```sql
+CREATE TABLE messages (
+    id SERIAL PRIMARY KEY,
+    phone VARCHAR(20) NOT NULL,
+    message INTEGER DEFAULT 0,
+    contexto TEXT,
+    ultimo_envio TIMESTAMP,
+    status_followup INTEGER DEFAULT 0,
+    encaminha_vendedor BOOLEAN DEFAULT false,
+    name VARCHAR(255),
+    created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+#### Tabela de Histórico de Chat (para memória):
+```sql
+CREATE TABLE n8n_chat_histories (
+    session_id VARCHAR(255) PRIMARY KEY,
+    messages JSONB,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+### 3. Configurar Redis
+
+O Redis é usado para gerenciar filas de mensagens. Certifique-se de que está acessível e configurado.
+
+## 📖 Como Usar
+
+### Fluxo Básico de Funcionamento
+
+1. **Recebimento de Mensagem**: O webhook recebe a mensagem do WhatsApp via Evolution API
+2. **Processamento**: A mensagem é filtrada e tipada (texto, áudio, imagem)
+3. **Processamento de Mídia**: 
+   - Áudios são transcritos usando Whisper
+   - Imagens são analisadas usando GPT-4 Vision
+4. **Fila de Mensagens**: Mensagens múltiplas são agrupadas para evitar respostas duplicadas
+5. **Processamento pela IA**: O agente de IA processa a mensagem usando contexto e memória
+6. **Resposta**: A resposta é dividida em partes e enviada sequencialmente
+
+### Exemplo de Uso - Agente Clínico
+
+1. Cliente envia: "Olá, gostaria de saber sobre depilação a laser"
+2. Agente responde: "Oi! Tudo bem? 😊 Sou a Dai, atendente da clínica..."
+3. Cliente pergunta sobre valores
+4. Agente envia link da tabela de preços
+5. Cliente solicita agendamento
+6. Agente coleta dados e gera link de agendamento
+
+## 📚 Documentação Detalhada
+
+Documentação específica de cada agente está disponível na pasta `docs/`:
+
+- [Agente Clínico - DaiLaser](docs/agente-clinico-dailaser.md)
+- [Agente Multi-Setor](docs/agente-multi-setor.md)
+- [Agente Concessionária](docs/agente-concessionaria.md)
+- [Agente Clínico - Stella Amorim](docs/agente-clinico-stella.md)
+
+## 🗄️ Estrutura de Dados
+
+### Formato de Mensagem Recebida (Webhook)
+
+```json
+{
+  "body": {
+    "data": {
+      "key": {
+        "remoteJid": "5511999999999@s.whatsapp.net",
+        "fromMe": false,
+        "id": "message_id"
+      },
+      "pushName": "Nome do Cliente",
+      "messageType": "conversation|audioMessage|imageMessage",
+      "message": {
+        "conversation": "texto da mensagem",
+        "audioMessage": { "base64": "..." },
+        "imageMessage": { "base64": "..." }
+      }
+    },
+    "date_time": "2025-01-17T19:20:26.314Z"
+  }
+}
+```
+
+### Formato de Resposta Enviada
+
+```json
+{
+  "number": "5511999999999",
+  "text": "Mensagem de resposta"
+}
+```
+
+## 🔧 Troubleshooting
+
+### Problema: Mensagens não estão sendo recebidas
+
+**Solução:**
+1. Verifique se o webhook está ativo no n8n
+2. Confirme que a URL está configurada corretamente no Evolution API
+3. Verifique os logs do n8n para erros
+
+### Problema: IA não está respondendo corretamente
+
+**Solução:**
+1. Verifique se a API Key da OpenAI está configurada
+2. Confirme que há créditos disponíveis na conta OpenAI
+3. Verifique os logs do n8n para erros de processamento
+
+### Problema: Memória não está funcionando
+
+**Solução:**
+1. Verifique a conexão com PostgreSQL
+2. Confirme que a tabela `n8n_chat_histories` existe
+3. Verifique as credenciais do PostgreSQL no n8n
+
+### Problema: Fila de mensagens não está funcionando
+
+**Solução:**
+1. Verifique a conexão com Redis
+2. Confirme que o Redis está acessível
+3. Verifique as credenciais do Redis no n8n
+
+## 📝 Notas Importantes
+
+- ⚠️ **Segurança**: Nunca exponha suas API Keys publicamente
+- 🔄 **Atualizações**: Os workflows podem precisar de ajustes conforme atualizações do n8n
+- 📊 **Monitoramento**: Monitore o uso da API OpenAI para controlar custos
+- 🧪 **Testes**: Sempre teste em ambiente de desenvolvimento antes de produção
+
+## 🤝 Contribuindo
+
+Contribuições são bem-vindas! Sinta-se à vontade para:
+
+1. Reportar bugs
+2. Sugerir melhorias
+3. Adicionar novos agentes
+4. Melhorar a documentação
+
+## 📄 Licença
+
+Este projeto está disponível para uso pessoal e comercial. Consulte os termos de uso das APIs utilizadas (OpenAI, Evolution API, etc.).
+
+## 📞 Suporte
+
+Para suporte, abra uma issue no repositório ou entre em contato através dos canais disponíveis.
+
+---
+
+**Desenvolvido com ❤️ usando n8n e IA**
+

@@ -1,0 +1,1981 @@
+{
+  "name": "stellaAmorim_automation",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f10d9a1e-2b8d-4c41-b905-35d3aa901234",
+              "leftValue": "={{ $('Recebe mensagem1').item.json.body.data.key.fromMe }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "c20e7b3f-5a64-4b8c-9f2a-abcde0987654",
+              "leftValue": "={{ $('Filtra os dados').item.json.wpp.Mensagem || '' }}",
+              "rightValue": "Estamos aqui por você, em cada etapa do caminho",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3824,
+        224
+      ],
+      "id": "8e1087fb-fe4e-4f18-bc68-9b0bc5d544d8",
+      "name": "ComandoDesbloquear?"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ $('configuração Global1').item.json['bot name'] }}_{{ $('Filtra os dados').item.json.cliente.Numero }}_block"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -3584,
+        208
+      ],
+      "id": "0a9034c7-4594-4980-97d4-9950c474e262",
+      "name": "RemoverChaveBloqueio",
+      "credentials": {
+        "redis": {
+          "id": "Xf7ecXrJNgAhCGHC",
+          "name": "Redis_automacoes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Envia notificação de erro da automação\n",
+        "height": 240,
+        "width": 640
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -4800,
+        800
+      ],
+      "id": "e8c7e7dd-995d-472e-bacc-53607d31af38",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "4401d2fb-0746-45e6-8a45-0b83d5b4a20b",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -4752,
+        304
+      ],
+      "id": "4a659371-d1be-47b4-9228-d81bb3da9fbb",
+      "name": "Recebe mensagem1",
+      "webhookId": "4401d2fb-0746-45e6-8a45-0b83d5b4a20b"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n-automacoes-evolution-api.mm95cz.easypanel.host/chat/getBase64FromMediaMessage/stellaamorim",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"message\": {\n    \"key\": {\n      \"id\": \"{{ $('Recebe mensagem1').item.json.body.data.key.id }}\"\n    }\n  },\n  \"convertToMp4\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2608,
+        432
+      ],
+      "id": "25eb5d13-c809-41ed-8ec7-719653ed6a14",
+      "name": "Pega base64 imagem1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "4PX2BphcRaxjYzVJ",
+          "name": "evolution-api_stellaamorim"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n-automacoes-evolution-api.mm95cz.easypanel.host/chat/getBase64FromMediaMessage/stellaamorim",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"message\": {\n    \"key\": {\n      \"id\": \"{{ $('Recebe mensagem1').item.json.body.data.key.id }}\"\n    }\n  },\n  \"convertToMp4\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2624,
+        112
+      ],
+      "id": "a2f9b7a8-8795-45f3-953a-9bd35f6a9e94",
+      "name": "Pega base64 audio1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "4PX2BphcRaxjYzVJ",
+          "name": "evolution-api_stellaamorim"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Recebe Mensagem, verifica o cliente e trava a automação em caso de interferência humana\n\n",
+        "height": 768,
+        "width": 1920,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -4800,
+        16
+      ],
+      "id": "55156ace-1394-4ceb-9d2c-7ac02f9b3ac8",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -1920,
+        256
+      ],
+      "id": "fb9e6139-40c0-443b-88ad-06159af77ed7",
+      "name": "Unifica os dados1"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "text": "O que tem nessa imagem ? me de a resposta como se fosse um cliente descrevendo na imagem, comece dizendo: te enviei uma imagem que... Sempre em primeira pessoa, como se você fosse o cliente. Ao invés de dizer você me enviou, diga eu te enviei",
+        "inputType": "base64",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -2128,
+        432
+      ],
+      "id": "2bebdcc6-ff5c-45dd-9f62-034df10c207c",
+      "name": "Analisa Imagem1",
+      "credentials": {
+        "openAiApi": {
+          "id": "16UpxIOAFlytv19r",
+          "name": "openAI_QUICK"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -2112,
+        112
+      ],
+      "id": "7ba546cd-3322-42d1-88de-370c2d81f2c8",
+      "name": "Transcreve audio1",
+      "credentials": {
+        "openAiApi": {
+          "id": "16UpxIOAFlytv19r",
+          "name": "openAI_QUICK"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Filtra os dados').item.json.wpp.TipoDeMensagem }}",
+                    "rightValue": "audioMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "e153912c-6097-4dd5-a97a-0bf40ea7bfee"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "20f6f952-5976-4efa-9052-6017953b99ee",
+                    "leftValue": "={{ $('Filtra os dados').item.json.wpp.TipoDeMensagem }}",
+                    "rightValue": "conversation",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Texto"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fab25a51-da5b-445f-835f-984e0b2bce11",
+                    "leftValue": "={{ $('Filtra os dados').item.json.wpp.TipoDeMensagem }}",
+                    "rightValue": "imageMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Imagem"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -2864,
+        256
+      ],
+      "id": "a4c325c1-ff55-43c0-9f9d-fff050fe7c6a",
+      "name": "Tipagem de mensagem1"
+    },
+    {
+      "parameters": {
+        "content": "## Identifica tipo de mensagem e analisa imagem e transcreve audio\n\n",
+        "height": 768,
+        "width": 1072,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2864,
+        16
+      ],
+      "id": "b8af2332-608c-4d29-ae8e-45169d86a062",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "Name",
+        "key": "={{ 'stellaamorim:queue:' + $('Filtra os dados').item.json.cliente.Numero }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -1680,
+        384
+      ],
+      "id": "2e9ad0c6-a876-4b3c-a8b9-f1215179297f",
+      "name": "BuscaMensagem1",
+      "credentials": {
+        "redis": {
+          "id": "Xf7ecXrJNgAhCGHC",
+          "name": "Redis_automacoes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "push",
+        "list": "={{ 'stellaamorim:queue:' + $('Filtra os dados').item.json.cliente.Numero }}",
+        "messageData": "={{ $json.values().join(\"\\n\") }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -1696,
+        144
+      ],
+      "id": "8f21bb92-d1dc-414f-a2b3-bc28744248ea",
+      "name": "RegistraMensagem1",
+      "credentials": {
+        "redis": {
+          "id": "Xf7ecXrJNgAhCGHC",
+          "name": "Redis_automacoes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3a0a3160-d328-40a7-b272-62a3353833b5",
+              "leftValue": "={{ $json.Name.length }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1472,
+        240
+      ],
+      "id": "c4ef39f7-852b-4409-9fb8-f5c970ba9f17",
+      "name": "verificaSeTemMaisMensagens1"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "Name",
+        "key": "={{ 'stellaamorim:queue:' + $('Filtra os dados').item.json.cliente.Numero }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -1248,
+        464
+      ],
+      "id": "93f80b4f-5acd-47f3-a9af-506e158abefd",
+      "name": "VerificaMensagem1",
+      "credentials": {
+        "redis": {
+          "id": "Xf7ecXrJNgAhCGHC",
+          "name": "Redis_automacoes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0d01b254-3522-434f-b13b-1ade5326141e",
+              "name": "Name",
+              "value": "={{ $json.Name.reverse().join(\"\\n\") }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1024,
+        320
+      ],
+      "id": "984b4d57-3fc0-43c3-9fe3-db840390d53e",
+      "name": "OrganizaMensagem1"
+    },
+    {
+      "parameters": {
+        "content": "## Cria uma fila de mensagens",
+        "height": 768,
+        "width": 1280,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1776,
+        16
+      ],
+      "id": "26b12287-7663-4862-9d65-6a796ac784c7",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3980cad6-e119-4c2b-a434-7f12c8ad4299",
+              "name": "Mensagem",
+              "value": "={{ $('Filtra os dados').item.json.wpp.Mensagem }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2464,
+        272
+      ],
+      "id": "f4391580-abc7-45c6-bbce-5cb25a72ed2c",
+      "name": "MensagemTexto1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('OrganizaMensagem1').item.json.Name }}",
+        "options": {
+          "systemMessage": "=<quem é você>\nVocê é “Amora\" é a atendente do consultório da clínica de cirurgia plástica da Dra. Stella Amorim. Ela atende os pacientes pelo WhatsApp, fornecendo informações sobre procedimentos, esclarecendo dúvidas sobre consultas, procedimentos estéticos e cirurgias plásticas.\n<quem é você>\n\n<seu objetivo>\nSerá o primeiro contato com o paciente, a Amora será responsável por repassar a primeira boa impressão para o paciente, construir uma relação de confiança, deve ter uma conversa amigável e usar empatia em todos os atendimentos, mostrar sempre interesse na conversa e forneça feedback nas conversas. Por exemplo: “entendo bem”, “compreendo”, “sei bem como é”.\n<seu objetivo>\n\n<instruções>\n\n- Entender e responder a perguntas e dúvidas dos pacientes  sobre cirurgia plástica e demais procedimentos;\n\n- Oferecer informações detalhadas sobre os procedimentos e tratamentos;\n\n- Fornecer conselhos e recomendações para minimizar riscos e melhorar resultados;\n\n- Fornecer suporte emocional e conforto aos pacientes;\n\n- Entender e lidar com o medo e ansiedade dos pacientes;\n\n- Oferecer recursos adicionais para ajudar os pacientes a lidar com o processo;\n\n- Respostas iniciais na interação mais curtas, somente o cumprimento de saudação;\n\n- Não tratar dois assuntos na mesma mensagem;\n\n- Não fazer uma saudação junto com uma pergunta;\n\n- Agradecer e reconhecer a gratidão dos pacientes;\n\n- Usar humor e linguagem informal para se conectar com os pacientes;\n\n- Explicar conceitos complexos de forma simples e acessível;\n\n- Oferecer opiniões e perspectivas pessoais (com cuidado);\n\n- Responder a perguntas frequentes e comuns;\n\n- Oferecer opções de tratamento e procedimentos;\n\n- Fornecer orientações sobre a preparação e a recuperação no pós-operatório;\n\n- Engajar o paciente na conversa e gerar interesse pelos serviços da Dra. Stella;\n\n- Criar uma experiência agradável, acolhedora, humanizada e profissional;\n\n- Fornecer informações detalhadas sobre as cirurgias sem passar valores; \n\n- Direcionar os pacientes interessados para o WhatsApp da equipe de agendamento somente depois de trocar pelo menos 10 mensagens com o paciente, passando todas as informações sobre o assunto abordado;\n\n- Sempre gerar feedback das respostas dos pacientes;\n- Não forçar a marcação da consulta;\n\n- Passar todas as informações possíveis sobre a cirurgia de interesse e também sobre a Dra. Stella e sua equipe;\n\n- No decorrer do atendimento, perguntar se pode enviar um link do ebook da Dra. Stella;\n\n- Todo atendimento deve ser encaminhado o link do ebook;\n\n- Buscar informações do paciente sobre o procedimento de interesse, se já realizou outras consultas, se já fez outras cirurgias;\n\n- Perguntar como conheceu o trabalho da Dra. Stella, se foi pelo Instagram, hospital, amigo, indicação ou outros meios;\n\n- Buscar entender do paciente quais são suas principais dores, o que ele busca com a realização da cirurgia de interesse;\n\n- Caso o paciente busque somente pelo preço da cirurgia, fazer questionamentos se o preço é somente o que realmente importa, se tem algo a mais que também se preocupa, como resultado, anestesia, hospital, entre outros;\n\n- Sempre que o paciente entrar no assunto de preço, tentar mostrar a diferença entre as cirurgias e também nos locais de realização, citar que toda equipe está focada na  segurança em primeiro lugar e também no resultado;\n\n- Sua cirurgia deve ser a melhor experiência de todas, queremos fazer parte dessa mudança em sua vida;\n\n- Não usar gírias, buscar uma conversa coloquial, objetiva e mais humana;\n\n- Esclarecer sobre o funcionamento das consultas.\n\n<instruções>\n\n<informações da empresa>\nMissão - Realizar sonhos através de procedimentos estéticos e cirurgias plásticas, com segurança, qualidade e naturalidade, buscando o encontro da beleza, a melhora da autoestima, do amor-próprio e do bem-estar dos pacientes.\nVisão - Ser reconhecida em território nacional como referência ética e profissional em cirurgia plástica, estética e reparadora.\nValores - Medicina humanizada pautada na atenção individual, confiança, respeito, segurança, ética, educação e encantamento.\n\n- HOSPITAIS QUE ATUAM:\n\" A Dra Stella Amorim opera  pelos hospitais da Rede D'OR, opções de hospitais no Rio fora da rede podem ser considerados em consulta com a Dra - sempre prezando a qualidade e segurança de nossos pacientes. \"\nO nome dos hospitais serão tratados em consulta.\n<informações da empresa>\n\n<modo de comunicação>\nQuando se trata de comunicação escrita persuasiva e assertiva, é fundamental utilizar uma linguagem clara e objetiva. Isso significa evitar expressões excessivamente complexas, informações muito técnicas ou palavras complexas que possam dificultar a compreensão do paciente.\nAo escrever de forma clara e objetiva, é possível transmitir a mensagem de forma mais eficiente, sem deixar margem para interpretações que possam gerar objeções que antes não existiam. Além disso, uma escrita clara e objetiva ajuda a manter o interesse do paciente, pois evita que ele se sinta confuso ou desmotivado.\n\nUma linguagem clara e objetiva, algumas técnicas podem ser utilizadas, como:\n1. Usar frases curtas e simples;\n2. Evitar o uso excessivo de adjetivos e advérbios;\n3. Utilizar palavras que sejam familiares ao leitor;\n4. Não utilizar siglas ou termos técnicos sem explicá-los previamente;\n5. Evitar redundâncias e repetições desnecessárias.\n\nDentro das interações, fazer uso de gatilhos mentais com os pacientes, como: reciprocidade, compromisso e coerência, prova social, autoridade, escassez e afeição. Exemplo: A agenda da Dra. está muito cheia, mas podemos verificar alguma coisa que fique boa pra lhe atender.\n\nNossa equipe acredita que a cirurgia plástica não é apenas um procedimento cirúrgico, é uma transformação de vida. Estamos preparados para oferecer uma experiência única, segura, individualizada e acolhedora.\nEm todos atendimentos, para criar autoridade, citar de forma separada a formação da Dra. Stella e suas especialidades, citar que ela é chefe de residência.\nCom mais de 15 anos de atuação na área médica, Drª Stella Amorim possui 3 residências em cirurgia: cirurgia geral, cirurgia do trauma e cirurgia plástica, a qual se apaixonou e hoje já tem mais de 3 mil cirurgias realizadas. Atualmente é Chefe de Serviço de uma das principais Escolas de Residência em cirurgia plástica do Rio de Janeiro, no Hospital Municipal Barata Ribeiro, onde também ensina cirurgia plástica aos médicos residentes dessa especialidade. \nDevido a sua experiência e sua formação em 03 especialidades, além de  números congressos nacionais e internacionais e atuação à frente e de uma Chefia de Serviço de Residência, oferece as melhores técnicas em todas as cirurgias realizadas, transmitindo total segurança aos pacientes no pré-operatório, durante a cirurgia e também no pós-operatório. Além disso, utiliza de todas as tecnologias disponíveis no mercado, sempre alinhadas a necessidade de cada paciente.\nDra. Stella é apaixonada pelo que faz, isso faz toda a diferença durante o processo cirúrgico. Devido sua vasta experiência, tem prática e domina todas as áreas da cirurgia plástica, inclusive ela da aula sobre o assunto. Os seus resultados são cada vez melhores, devido as novas técnicas as quais vem se atualizando no dia a dia.\nNossa equipe é altamente qualificada e preparada para oferecer a melhor experiência ao paciente, temos uma assistência personalizada e única para cada cirurgia realizada.\n<modo de comunicação>\n\n<fluxo de atendimento> \n### 1️⃣ Saudação Inicial  \n- Amora sempre se apresenta e se coloca à disposição. \n- _\"Oi, [Nome]! 😊 Tudo bem? Como podemos ajudar?\n- _\"Oie, [Nome]! 😊 Como estão as coisas? Como podemos ajudar?\nDepois da saudação e primeira interação do paciente, perguntar o nome.\n❌ **NÃO** utilizar a pergunta, “Como podemos ajudar hoje?”\n- Na primeira interação perguntar o nome da paciente para criar proximidade. Durante as conversas citar o nome em algumas situações. Não falar o nome do paciente em toda mensagem.\n- Se o paciente perguntar sobre valores no início da conversa, amora deve perguntar se o paciente conhece o trabalho da Dra. Stella, nesse momento passar as informações. \n- Para passar informações sobre consulta, primeiramente deve ser realizado uma sondagem com o paciente, extrair o maior número de informações possíveis.\n- Não falar sobre cirurgia e procedimentos durante a saudação inicial.\n- Se a primeira interação do paciente não tiver um assunto específico, fazer a apresentação e perguntar o assunto de interesse.\n- Se o paciente enviar uma imagem para análise, pedir desculpas e informar que podemos fazer nenhuma avaliação, somente na consulta.\n- Fazer uso de emojis de forma moderada para gerar mais interação.\n- Não enviar muitas mensagens de uma vez, buscar interagir com o paciente.\n- Durante a conversa com o paciente perguntar de onde ele é, como chegou até a Dra. Stella, se conhece o trabalho dela, se tem algum conhecido que já realizou alguma cirurgia com ela.......\n- Se não houver interação por parte do paciente em um intervalo de 3 horas, enviar o  ebook com os resultados da cirurgia e se colocar a disposição.\n🔗 **[E-BOOK GRATUITO COM FOTOS E INFORMAÇÕES](https://www.canva.com/design/DAGOgm_Lw50/_GZet9QmJ2tNzpY0caVRRQ/view?utm_content=DAGOgm_Lw50&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hef17f4c0cb)**  \n- Utilizar expressões como oie, oii, olá, para gerar mais proximidade.\n- Antes de falar sobre a cirurgia, enfatizar que esse é um momento único e nossa equipe fará de tudo para que seja a melhor experiência.\n- Usar sempre da empatia com o paciente.\n- Não fazer julgamentos, piadas ou ser preconceituosa.\n- Antes de falar sobre agendamento da consulta, falar sobre a Dra. Stella, sua especialidade, resultados, locais de atendimentos, dentre outros.\n- Utilizar no máximo 350 caracteres em cada mensagem, se preciso mandar duas ou mais mensagens separadas para concluir o assunto, dando a entender que está digitando.\n- Não enviar perguntas na mesma mensagem da explicação.\nCaso a paciente entrar em conversas de cunho pessoal, direcionar educadamente para o lado profissional.\nSe o cliente pedir um retorno via telefone, comunique que iremos retornar o mais breve possível.\n❌ **NÃO** passe valores de procedimentos ou cirurgias, mesmo que o paciente insista.\n❌**NÃO** ACEITAM PLANOS DE SAÚDE PARA CONSULTA:\n\" A Dra Stella Amorim não é diretamente credenciada a nenhum plano de saúde, para a consulta geramos a nota fiscal para que o paciente possa pedir o reembolso ao plano 😊 \nEm caso de cirurgia, é avaliado em consulta, se o paciente apresenta códigos de reparação que possam ser solicitados ao plano, para que o paciente tenha o auxílio hospitalar do plano de saúde se possível \"\n✅ Destaque que os preços são personalizados e dependem de cada caso. Somente com uma avaliação podemos passar um valor.\n✅ Se o paciente insistir no preço, começar a fazer questionamentos sobre a cirurgia, locais, técnicas que podem ser utilizadas, tempo cirúrgico, IMC do paciente, exames pré-operatórios para a cirurgia, melhor local para realização, equipe necessária e materiais a serem utilizados.\n ✅ Enfatize que cada paciente é único, que não podemos tabelar valores, pois as técnicas em cada cirurgia podem mudar de acordo com cada paciente.\n✅ Use os diferenciais da clínica, da equipe, da cirurgiã, dos hospitais, para mostrar valor antes do preço.  \n\"A Dra. Stella trabalha com um atendimento personalizado para garantir o melhor resultado para cada paciente. O valor depende da técnica utilizada, da extensão do procedimento e dos custos hospitalares.\n\"Cada caso é único! 😊 Para um orçamento personalizado, a Dra. Stella faz uma avaliação para entender suas necessidades e te passar todas as informações. \nEm alguns casos, pode ser feito uma cirurgia combinada, onde o hospital oferece descontos específicos para as cirurgias, por isso, durante a consulta a Dra. Stella consegue fazer um cronograma e definir a melhor cirurgia para o melhor resultado.\nExplicar para o paciente sobre a cirurgia ou procedimento de interesse de forma que não fique nenhuma dúvida. Procurar ser bem clara nas explicações.\n✅ **Se o paciente perguntar sobre um procedimento específico:**  \nSempre envie o link do vídeo correspondente (sem perguntar se ele quer).  \n\n📌 **Exemplo:**  \n_\"A Dra. Stella é especialista nesse procedimento, ela tem os melhores resultados! Estou te enviando um vídeo com todas as informações para você entender melhor. \n\n🔗 **[Link do vídeo correspondente]**  \nApós o envio do link do vídeo, encaminhar também o e-book.\n---\n### **4️⃣ Envio do E-Book (Com Fotos de Antes e Depois)**  \n\n📌 **Sempre que o paciente perguntar sobre fotos, envie o link do e-book imediatamente:**  \n🔗 **[E-BOOK GRATUITO COM FOTOS E INFORMAÇÕES](https://www.canva.com/design/DAGOgm_Lw50/_GZet9QmJ2tNzpY0caVRRQ/view?utm_content=DAGOgm_Lw50&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hef17f4c0cb)**  \n\n💡 **Não pergunte se ele quer receber. Simplesmente envie e explique:**  \n_\"A Dra. Stella preparou um e-book gratuito com muitas informações importantes e fotos de antes e depois de procedimentos. Dá uma olhada! 📖✨\"_  \n\n### **5️⃣ Diferenciais da Clínica**  \nPara agregar valor antes de falar de consulta, destaque os diferenciais:  \n\n✅ Equipe multidisciplinar: enfermeira, fisioterapeuta, nutricionista e médica para pré e pós-operatório.  \n✅ A Dra. Stella só opera no nos melhores hospitais do Rio de Janeiro.  \n✅ Pagamento facilitado: **até 6x sem juros** e possibilidade de reembolso por plano de saúde (avaliado na consulta).  \n### **6️⃣ Agendamento de Consulta**  \n🚨 **Para agendar uma consulta a Amora dever mandar o seguinte link de agendamento: **\n**https://pacientemedx-testepacientemedx.azurewebsites.net/agendamentoonline/89HnIlBNC9Jps0Ht7m3YQJijQYP%2fN%2frnJxqWkpQvn98%3d**\n📌 **Exemplo de resposta:**  \n_\"Para marcar sua consulta é só escolher um horário no link abaixo,: [Clique para agendar: **\n**https://pacientemedx-testepacientemedx.azurewebsites.net/agendamentoonline/89HnIlBNC9Jps0Ht7m3YQJijQYP%2fN%2frnJxqWkpQvn98%3d**\n\n### **7️⃣ Locais e Horários das Consultas**  \n📍 **Copacabana (Consultório da Dra. Stella)**  \n- Consultas presenciais às **segundas-feiras, das 09h às 20h**.\n- A Dra. Stella atende na Clinica Amour em Copacabana, na Avenida Atlântica, 4240, sala 216 – Shopping Cassino Atlântico.\nInformações gerais se o paciente solicitar: Tem estacionamento no shopping se vier de carro, se vier de metrô, o ponto mais próximo é da General Osório.\nNa Amour, Dra. Stella selecionou os melhores profissionais para atendimento aos pacientes do primeiro contato até o pós-operatório. Nutrologia, Dermatologia, Ginecologia, Proctologia, Fisioterapia, Centro de tratamento de lipedema e também um centro de emagrecimento.\nAcreditamos que uma cirurgia plástica vai muito além de transformar o corpo: ela transforma histórias, devolve autoestima, desperta amor-próprio e realiza sonhos.\n📍 **Niterói (Consultório da Dra. Stella)**  \n- Consultas presenciais às **quartas feiras, das 14h às 17h**.\nEm Niterói a Dra. atende na clínica FC Espaço Lounge, localizado no imóvel comercial situado na av. Sete de Setembro 317 sala 1006, na cidade de Niterói, Rio de Janeiro.\nOs dois locais de atendimento tem estacionamento pago.\n- Consultas online pode ser realizada nas segundas e nas quartas nesses mesmos horários.  \n- A agenda da Dra. Stella é sempre muito cheia, é sempre bom agendar com antecedência.\nNa consulta ela vai te examinar e entender suas expectativas, além de explicar as melhores técnicas para obter o melhor resultado. Ela vai também pedir exames, fazer os orçamentos, falar do pré e do pós-cirúrgico e passar todas as informações que você precisa para planejar sua cirurgia. A consulta dura em média 1:30h.\nDra. Stella é muito atenciosa, todos os pacientes amam a consulta com ela, é super detalhista e vai tirar todas as suas dúvidas.\n- Identificar com o paciente a urgência dele em fazer um procedimento, se é de imediato ou mais para o futuro.\n- A consulta é um momento único, uma oportunidade do paciente conhecer o cirurgião, gerar empatia, decidir se realmente irá operar com ele, ter confiança. Lembrar que a cirurgia não acaba no dia da realização, existe um longo período de acompanhamento pela equipe e muitos profissionais não dão nenhum suporte.\n\n📌 **Se perguntarem sobre valores da consulta:**  \nNão passar o valor na primeira resposta. Perguntar para o paciente de onde ele é, se ele prefere consulta presencial ou on-line, sempre fazendo as perguntas separadas, dando tempo do paciente responder.\nAntes de passar o preço, falar que a Dra. Stella é muito detalhista na consulta e tira todas as dúvidas, a consulta tem um tempo de duração de uma hora e meia. \nPode ficar bem a vontade que todos pacientes amam a consulta com ela.\nQuando passar o preço, passar as condições de pagamento separadas e sempre trabalhar o preço com investimento.\n_\"O valor do investimento da consulta é de R$ 600,00, (presencial ou online). Sendo que o pagamento deve ser antecipado para garantir a vaga. Vou te enviar o link para agendamento\"_  \nhttps://pacientemedx-testepacientemedx.azurewebsites.net/agendamentoonline/89HnIlBNC9Jps0Ht7m3YQJijQYP%2fN%2frnJxqWkpQvn98%3d\n\nPara pagamento da consulta perguntar para o cliente qual a forma que ele vai querer pagar, pix ou cartão.\nPara cartão enviar o link abaixo e solicitar que envie o comprovante.\nLINK PAGAMENTO - https://pag.getnet.com.br/BSG455Qlwl\n\nPara pagamento em PIX, passar a chave abaixo em nome da Dra. Stella Amorim.\nChave PIX CPF - 014.302.755-70.\n\n### **9️⃣ Encerramento da Conversa**  \n💡 **Acompanhe o fluxo da conversa e só encerre quando o paciente demonstrar que finalizou.**  \n\n_(Caso o paciente não responda por mais de 5 minutos, retome educadamente.)_  \n\n📌 **Exemplo de retomada:**  \n_\"Oi, [Nome]! 😊 Só passando para ver se ficou alguma dúvida. Quer saber mais sobre algo específico?\"_  \n\nEnvie link dos vídeos relacionados aos procedimentos que os pacientes estão interessados. \n\nNão precisa perguntar se pode enviar. Ou se o paciente quer que você envie. \n\nSimplesmente avise que você está enviando o link do vídeo para que ele veja. E envie o link coerente com a conversa que estão tendo\n<fluxo de atendimento>\n\n<tipos de cirurgia>\nProcedimentos oferecidos (com links para vídeos explicativos): \n• Abdominoplastia: https://drive.google.com/file/d/17LM_Ai0Ccol7X5SK7R1B6Nx3XLOwSaqK/view?usp=drive_link\n\nÉ uma cirurgia que permite a retirada do excesso de pele e gordura do abdômen, tratando a flacidez e a diástase. Pode ser associada a uma lipoaspiração para que se obtenha um melhor resultado. A gravidez ou o ganho e perda massiva de peso podem ocasionar flacidez e aspecto de “avental” no abdômen e a cirurgia de abdominoplastia vem justamente para tratar isso.\n\n• Ginecomastia Masculina: \nhttps://drive.google.com/file/d/1fVXaBpklXGnJedVqsNphxfHv37hj7a9f/view?usp=drive_link\n\nA ginecomastia é uma cirurgia indicada para os homens que possuem excesso de gordura localizada nas mamas. Existem casos de uma pequena quantidade de gordura abaixo da aréola até uma mama que tem o aspecto feminino. Pode ocorrer esse excesso de gordura por diversos fatores, como hereditários, doenças, alterações hormonais ou mesmo pelo uso de medicamentos.\n-É uma cirurgia bem rápida e que tem um pós-operatório bem tranquilo. Além disso faz um bem enorme ao homem trazendo alívio aos danos emocionais e melhora a autoestima e a autoconfiança masculina.\n\n• Lipo HD:\nhttps://drive.google.com/file/d/1vR4tjtm_9SJIcYiN2aLgmFjaUFe_z2d4/view?usp=drive_link\n\nA Lipoaspiração é uma das cirurgias mais conhecidas, através dela é possível remodelar o corpo da paciente. Na lipoaspiração é retirado excesso de gordura.\n-A lipoaspiração pode ser realizada em diferentes zonas do corpo, sendo as mais comuns o abdômen, os flancos, o “culote”, a “papada”, as costas, os braços e as coxas, e pode ser realizada isoladamente ou em associação a outros procedimentos para redução do abdômen (ex. abdominoplastia).\n-A LIPO ULTRA HD UGRAFT é uma cirurgia de lipoaspiração de definição muscular. Ela pode ser feita na região de abdômen, costas, braços e pernas. Deve ser feito apenas por cirurgiões plásticos. É uma cirurgia sem cortes e que tem uma recuperação rápida. A gordura localizada é retirada, tratada e depois são feitas lipoenxertias nos músculos para causar uma hipertrofia real.\nA Drª Stella faz a Lipo Ultra HD U-graft, aquela em a gordura localizada é retirada, tratada e são feitos enxertos de gordura rica em células tronco dentro dos músculos, guiados por ultrassom, para causar real hipertrofia na musculatur.\n\n• Mommy Makeover: \nhttps://drive.google.com/file/d/1rHDDoy0FnGHeMVj85SaHjMixAsMzN9Df/view?usp=drive_link\n\n• Nariz: \nhttps://drive.google.com/file/d/18lClDoNOdZD8NkSqZvD3LX07rwjpsQDT/view?usp=drive_link\nRinoplastia é uma cirurgia do nariz que utiliza um aparelho de ultrassom, que vibra em alta frequência e corta o osso sem danificar as estruturas ao redor, como cartilagens, veias, nervos e artérias.\n-A Rinoplastia Ultrassônica é considerada menos invasiva e traumática do que a rinoplastia tradicional, resultando em um pós operatório mais confortável para o paciente.\n-Às vezes é necessário estruturar o nariz usando a cartilagem retirada de outra parte do corpo do paciente. Além disso, a Dra. Stella precisa examinar também se o paciente tem algum problema funcional, como desvio de septo por exemplo, para corrigir na hora da cirurgia. Tudo isso vai influenciar na complexidade de cada caso e no valor da cirurgia também. \n\n• Ninfoplastia:\n https://drive.google.com/file/d/1_YqJbza-hujH-fKUSuVE3dLJs4N76wNR/view?usp=drive_link\nÉ a cirurgia íntima que visa reduzir  os pequenos lábios da vagina. Muitas mulheres recorrem a esse tipo de cirurgia por apresentarem alguma espécie de hipertrofia nessa zona do corpo e desejarem corrigi-la.\n-É uma cirurgia bem rápida e que tem uma recuperação no pós-cirúrgico  bem tranquila. Essa cirurgia muitas vezes proporciona uma melhoria incrível na qualidade de vida da paciente.\n• Orelha: \nhttps://drive.google.com/file/d/1-89_aletIXFc0ZvGt801UlPgVc_hCmkm/view?usp=drive_link\nA cirurgia da orelha é indicada para quem deseja harmonizar os traços faciais e para melhorar a autoestima de adultos e crianças com orelhas excessivamente grandes, deformadas ou projetadas (orelha de abano). Além de corrigir o abano pode também refazer as curvas e os contornos de uma orelha normal.\n-É uma cirurgia que normalmente é realizada sob anestesia local e sedação e que pode ser feita em crianças a partir de 6 anos de idade.\n\n• Mama: \nhttps://drive.google.com/file/d/1DKxKdEDL48FYwu7CCwMlkd8V8QU3oBei/view?usp=drive_link\nA mamoplastia de aumento, também chamada de cirurgia de aumento das mamas ou de prótese de silicone, é um dos procedimentos mais realizados no país. A cirurgia utiliza implantes que dão volume aos seios ou restauram o volume natural que pode ter sido perdido após perda de peso ou gestação.\n-A cirurgia de prótese de silicone não é igual para todas as mulheres. Para conquistar um aspecto natural, devem ser levadas em consideração as características físicas individuais e expectativas em relação ao resultado.\n-A escolha da prótese de silicone ideal é feita em conjunto: médica e paciente, pois fatores como altura, qualidade da pele, largura do tórax e estilo de vida são preponderantes na escolha do tamanho e formato do silicone. \nA Mastopexia é a cirurgia que levanta e remodela a mama através da retirada de pele excedente e do reposicionamento das aréolas e do tecido mamário. Pode ser realizado com ou sem o implante de próteses de silicone. \nA cirurgia de mastopexia não é igual para todas as mulheres. Para conquistar um aspecto natural, devem ser levadas em consideração as características físicas individuais e expectativas em relação ao resultado. A cicatriz pode ser em L ou em T invertido.\n-A escolha ou não do uso de próteses de silicone  é feita em conjunto entre médica e paciente, pois fatores como idade, altura, peso, qualidade da pele, tamanho da mama, largura do tórax e estilo de vida são preponderantes nessa escolha.\n\n•\tBlefaroplastia:\nA blefaroplastia é uma cirurgia bem rápida e que traz um benefício enorme para o paciente. Pode ser feita nas pálpebras superiores e/ou inferiores, retirando o excesso de pele e bolsinhas de gordura. É uma cirurgia que tem uma recuperação rápida.\nAlém do envelhecimento, ainda podem ser corrigidas ou minimizadas alterações hereditárias através da blefaroplastia, que torna o olhar mais descansado, fresco e alerta, colocando fim ao semblante triste, cansado ou envelhecido.\n\n•\tLifiting de Face\nÉ um dos procedimentos mais procurados atualmente na cirurgia plástica porque tem a finalidade  de melhorar os sinais decorrentes do envelhecimento no rosto e no pescoço. Essa cirurgia proporciona um resultado natural, diminuindo a flacidez da pele e levantando as estruturas mais profundas da face, tratando também a papada.\n\n•\tRemodelação costal\nA cirurgia de remodelação costal é usada para diminuir a cintura em média de 7 a 12 cm. É uma cirurgia minimamente invasiva, onde através de uma incisão do tamanho do furo de agulha e usando um ultrassom de última geração é feito o enfraquecimento das 3 últimas costelas. No pós cirúrgico a paciente fará o uso do corset, que é o responsável por fazer a mudança de angulação das costelas entre 60 a 90 dias.\nÉ uma cirurgia que normalmente é realizada sob anestesia geral e que pode ser feita combinada com a lipoaspiração ou abdominoplastia.\n\nEnvie os links quando achar necessário. Não precisa perguntar se o paciente quer que você envie. Simplesmente envie o link e informe o que tem nele.\n<tipos de cirurgia>\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -416,
+        96
+      ],
+      "id": "759dd7bc-79d8-4ccf-a4ab-66a334b96b11",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -464,
+        288
+      ],
+      "id": "9fdcd7c7-9f21-4ba1-83a0-4c0998a364b6",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "16UpxIOAFlytv19r",
+          "name": "openAI_QUICK"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -976,
+        96
+      ],
+      "id": "269756b7-413d-4367-8a20-74212c715452",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Filtra os dados').item.json.cliente.Numero }}",
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -336,
+        464
+      ],
+      "id": "a39825e3-f052-4e4f-854d-200cc98e4095",
+      "name": "Postgres Chat Memory1",
+      "credentials": {
+        "postgres": {
+          "id": "lyEBuvIcd6Sn4Qaf",
+          "name": "postg_stellaamorim"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ 'stellaamorim:queue:' + $('Filtra os dados').item.json.cliente.Numero }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -672,
+        320
+      ],
+      "id": "a1ace5c2-afbc-4616-8662-923a436565ea",
+      "name": "limpa a fila1",
+      "credentials": {
+        "redis": {
+          "id": "Xf7ecXrJNgAhCGHC",
+          "name": "Redis_automacoes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ 'stellaamorim:queue:' + $('Filtra os dados').item.json.cliente.Numero }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -1264,
+        96
+      ],
+      "id": "1d03c644-ce88-4b9f-add3-3dbb938a8c70",
+      "name": "limpando os testes de fluxo1",
+      "credentials": {
+        "redis": {
+          "id": "Xf7ecXrJNgAhCGHC",
+          "name": "Redis_automacoes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Agente de IA Amora\n",
+        "height": 768,
+        "width": 336,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        16
+      ],
+      "id": "fb9d0f3f-821b-4055-b8d0-874254818a1d",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3200bdfe-5881-43e0-9991-921c18a96289",
+              "name": "Resposta",
+              "value": "={{ $json.output.split('\\n\\n') }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -16,
+        96
+      ],
+      "id": "4013276f-216b-4522-8f8d-33475fae6bfc",
+      "name": "SeparandoMensagemEmPartes1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "Resposta",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        32,
+        368
+      ],
+      "id": "23f68bb7-01b9-4a20-84df-8b8505e5657e",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me1",
+      "typeVersion": 1,
+      "position": [
+        736,
+        416
+      ],
+      "id": "c211bd22-b7ea-4029-bc8b-85bfd8af3788"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n-automacoes-evolution-api.mm95cz.easypanel.host/message/sendText/stellaamorim",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "SUA_EVOLUTION_API_KEY_AQUI"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": {{ JSON.stringify($('Filtra os dados').item.json.cliente.Numero) }},\n  \"text\": {{ JSON.stringify($json.Resposta) }}\n}\n\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        336,
+        304
+      ],
+      "id": "af06d352-c74f-48ab-8956-b76ae7ecb296",
+      "name": "EnviarespostaAoCliente1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0bb00fe7-fd10-4039-b3c8-4fa55e3e0e0f",
+              "name": "Resposta",
+              "value": "={{ $('Split Out1').item.json.Resposta.replaceAll('\"','').replace(/\\\\n/g,'\\n').replace(/\\n{2,}/g,'\\n\\n').replaceAll('\\\\\\\\','\\\\').replaceAll('#','\\\\#').replace(/[\\u0000-\\u001F\\u007F]/g,'').trim() }}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        512,
+        64
+      ],
+      "id": "3e028703-faa4-4845-adbb-314079886966",
+      "name": "LimpaMensagem1"
+    },
+    {
+      "parameters": {
+        "content": "## Separa, prepara e envia as mensagens uma por uma",
+        "height": 832,
+        "width": 1200,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        -48
+      ],
+      "id": "21df31f2-77f8-4afc-8f91-c9be2c29c4f4",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        288,
+        48
+      ],
+      "id": "7f259036-b1b1-48d1-a9e1-ac34310299dd",
+      "name": "envia uma mensagem por vez1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a01d0b8b-3c4e-4d0f-bc7e-0b6b8e2a7f11",
+              "leftValue": "={{ $json.message_count }}",
+              "rightValue": 15,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        704,
+        176
+      ],
+      "id": "6db3b221-8d39-45a6-aaf4-0ba87b0823de",
+      "name": "ChecaLimiteMensagens1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE public.messages\nSET status = 'human', escalated_at = NOW()\nWHERE id = $1;",
+        "options": {
+          "queryReplacement": "={{ $('contador_de_mensagens').item.json.id }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        896,
+        160
+      ],
+      "id": "3172b9e0-a2f1-4efc-ac57-4262c48258b2",
+      "name": "EscalaParaHumano1",
+      "credentials": {
+        "postgres": {
+          "id": "lyEBuvIcd6Sn4Qaf",
+          "name": "postg_stellaamorim"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "messages",
+          "mode": "list",
+          "cachedResultName": "messages"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": 1,
+            "phone": "={{ $('Filtra os dados').item.json.cliente.Numero }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -3200,
+        240
+      ],
+      "id": "b36ba2b8-faa9-42b5-804f-d74e057562f0",
+      "name": "cadastra o cliente1",
+      "credentials": {
+        "postgres": {
+          "id": "lyEBuvIcd6Sn4Qaf",
+          "name": "postg_stellaamorim"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "messages",
+          "mode": "list",
+          "cachedResultName": "messages"
+        },
+        "where": {
+          "values": [
+            {
+              "column": "phone",
+              "value": "={{ $json.cliente.Numero }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -3568,
+        480
+      ],
+      "id": "aadb5d5c-46dd-413f-9099-ff8bbf0da368",
+      "name": "Pega os dados do Cliente1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "lyEBuvIcd6Sn4Qaf",
+          "name": "postg_stellaamorim"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "30681789-55d3-4fb4-aea3-f7981c8e99f9",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3408,
+        384
+      ],
+      "id": "399930e7-a15a-4e7f-8b4a-719e2f816462",
+      "name": "checarCliente1"
+    },
+    {
+      "parameters": {
+        "sendTo": "seu-email@exemplo.com",
+        "subject": "Erro na Automação Stella Amorim, favor verificar\n",
+        "emailType": "text",
+        "message": "Erro na Automação Stella Amorim, favor verificar",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -4560,
+        896
+      ],
+      "id": "361b2fff-417f-410b-9b05-00da0f398270",
+      "name": "Send a message1",
+      "webhookId": "e346146c-28e4-4c0a-836d-f943f37d94ef",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "MU2Yc4592bNkP7hF",
+          "name": "gmail"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0b2a9494-d578-4f42-b635-8cd2395bebbd",
+              "leftValue": "={{ $('Recebe mensagem1').item.json.body.data.key.fromMe }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -4112,
+        240
+      ],
+      "id": "c0819104-ff24-4186-bb62-255ed168f5c9",
+      "name": "FromMe?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "41e03a63-2506-4dee-9954-b9365b44b345",
+              "name": "bot name",
+              "value": "Amora",
+              "type": "string"
+            },
+            {
+              "id": "a3d1b8c2-7f2e-4a91-9411-4f1e3a9c0b21",
+              "name": "block_ttl_seconds",
+              "value": 300,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -4336,
+        304
+      ],
+      "id": "eb66745b-329c-4fd3-9c52-7fa10b180015",
+      "name": "configuração Global1"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "isBlocked",
+        "key": "={{ $('configuração Global1').item.json['bot name'] }}_{{ $('Filtra os dados').item.json.cliente.Numero }}_block",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -4048,
+        592
+      ],
+      "id": "e0d89867-a57c-4467-9e00-6c2c57d0eb70",
+      "name": "bloqueado?1",
+      "credentials": {
+        "redis": {
+          "id": "Xf7ecXrJNgAhCGHC",
+          "name": "Redis_automacoes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "={{ $('configuração Global1').item.json['bot name'] }}_{{ $('Filtra os dados').item.json.cliente.Numero }}_block",
+        "value": "true",
+        "expire": true,
+        "ttl": "={{ $('configuração Global1').item.json['block_ttl_seconds'] || 300 }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -3760,
+        48
+      ],
+      "id": "4266a924-008c-4377-9441-fe132a4f690f",
+      "name": "chave_bloqueio1",
+      "credentials": {
+        "redis": {
+          "id": "Xf7ecXrJNgAhCGHC",
+          "name": "Redis_automacoes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1440,
+        464
+      ],
+      "id": "159161dc-e38f-4634-8983-d83fd8249508",
+      "name": "Espera4Segundos1",
+      "webhookId": "25984ca0-664b-42e8-9ff1-80403eeb4c78"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e460b78c-6257-4b6a-808c-f1c963d90c98",
+              "leftValue": "={{ $json.isBlocked }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "a5b0c3e1-3f9b-4d6f-9e2a-0b1c2d3e4f5a",
+              "leftValue": "={{ $('Recebe mensagem1').item.json.body.data.key.fromMe }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3792,
+        464
+      ],
+      "id": "f4a5ffd3-e973-4930-be1b-f611b5c84b71",
+      "name": "bloqueioExiste?1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -3792,
+        640
+      ],
+      "id": "04c12ba5-7381-4225-bc55-ec50b546aa44",
+      "name": "IgnoraMensagem1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -4352,
+        896
+      ],
+      "id": "b7743eff-a39b-4731-9897-952485671467",
+      "name": "NaoFazNada1"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        512,
+        304
+      ],
+      "id": "3531c38c-1301-42d5-a751-797c94f74c02",
+      "name": "Espera 1 segundo1",
+      "webhookId": "7e64b6e7-9da1-4485-8747-107721861246"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -4752,
+        896
+      ],
+      "id": "69f09244-5bd0-4618-b0a2-4f454bcbe2c3",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE public.messages\nSET message = COALESCE(message, 0) + 1\nWHERE id = $1\nRETURNING id, message AS message_count;",
+        "options": {
+          "queryReplacement": "={{ $('Pega os dados do Cliente1').item.json.id }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -3216,
+        448
+      ],
+      "id": "0245cadc-6881-4973-9f2c-e60bb397c130",
+      "name": "contador_de_mensagens",
+      "credentials": {
+        "postgres": {
+          "id": "lyEBuvIcd6Sn4Qaf",
+          "name": "postg_stellaamorim"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base64",
+        "options": {
+          "mimeType": "image/jpeg"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -2352,
+        432
+      ],
+      "id": "e06eef97-ccb1-48f8-b2e5-debadda6f318",
+      "name": "Converte o base64 em imagem"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base64",
+        "options": {
+          "mimeType": "audio/ogg"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -2352,
+        112
+      ],
+      "id": "a4efac9d-dcdb-4e0f-93fd-62851148df37",
+      "name": "Converte o base64 em audio"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b739c470-bcfe-4d75-894b-792bf459b7f1",
+              "name": "cliente.Nome",
+              "value": "={{ $json.body.data.pushName }}",
+              "type": "string"
+            },
+            {
+              "id": "13d7132f-8e39-4bbf-9090-395d7f8cc421",
+              "name": "cliente.Numero",
+              "value": "={{ $json.body.data.key.senderPn || $json.body.data.key.remoteJid  }}",
+              "type": "string"
+            },
+            {
+              "id": "801441ac-40c7-4692-b74c-96a113e8b06e",
+              "name": "cliente.UltimaMensagem",
+              "value": "={{ $json.body.data.key.fromMe }}",
+              "type": "boolean"
+            },
+            {
+              "id": "7d300ead-226b-4e42-8d7a-c706861edcd6",
+              "name": "wpp.TipoDeMensagem",
+              "value": "={{ $json.body.data.messageType }}",
+              "type": "string"
+            },
+            {
+              "id": "bc9c971d-43dd-463a-99d8-8d8b19cf9dfe",
+              "name": "cliente.Data",
+              "value": "={{ $json.body.date_time.toDateTime().format('dd/MM/yyyy') }}",
+              "type": "string"
+            },
+            {
+              "id": "842be4a9-c5f6-46d5-8f50-7de1279e749a",
+              "name": "wpp.Mensagem",
+              "value": "={{ $json.body.data.message.audioMessage?.base64 || $json.body.data.message?.base64  || $json.body.data.message.conversation || null }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -4560,
+        304
+      ],
+      "id": "0bedc407-1205-4b94-874d-ca9a85fb779d",
+      "name": "Filtra os dados"
+    }
+  ],
+  "pinData": {
+    "Recebe mensagem1": [
+      {
+        "json": {
+          "headers": {
+            "host": "quickaiautomation.app.n8n.cloud",
+            "user-agent": "axios/1.12.2",
+            "content-length": "1368",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "5.161.206.196",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "US",
+            "cf-ray": "9a029d88b132d6e9-IAD",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "x-forwarded-for": "5.161.206.196, 172.71.194.230",
+            "x-forwarded-host": "quickaiautomation.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-49-5f8b879977-tf6vm",
+            "x-is-trusted": "yes",
+            "x-real-ip": "5.161.206.196"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "event": "messages.upsert",
+            "instance": "stellaamorim",
+            "data": {
+              "key": {
+                "remoteJid": "SEU_NUMERO_AQUI@s.whatsapp.net",
+                "remoteJidAlt": "SEU_NUMERO_AQUI@s.whatsapp.net",
+                "fromMe": false,
+                "id": "3A67690647E066B84709"
+              },
+              "pushName": "Tiago ",
+              "status": "DELIVERY_ACK",
+              "message": {
+                "conversation": "Teste",
+                "messageContextInfo": {
+                  "deviceListMetadata": {
+                    "senderKeyIndexes": [],
+                    "recipientKeyIndexes": [],
+                    "senderKeyHash": {
+                      "0": 63,
+                      "1": 214,
+                      "2": 245,
+                      "3": 117,
+                      "4": 249,
+                      "5": 30,
+                      "6": 76,
+                      "7": 114,
+                      "8": 250,
+                      "9": 184
+                    },
+                    "senderTimestamp": 1763159804,
+                    "recipientKeyHash": {
+                      "0": 69,
+                      "1": 72,
+                      "2": 245,
+                      "3": 84,
+                      "4": 118,
+                      "5": 47,
+                      "6": 165,
+                      "7": 165,
+                      "8": 244,
+                      "9": 195
+                    },
+                    "recipientTimestamp": 1762340258
+                  },
+                  "deviceListMetadataVersion": 2,
+                  "messageSecret": {
+                    "0": 89,
+                    "1": 246,
+                    "2": 116,
+                    "3": 45,
+                    "4": 228,
+                    "5": 19,
+                    "6": 103,
+                    "7": 241,
+                    "8": 29,
+                    "9": 156,
+                    "10": 92,
+                    "11": 2,
+                    "12": 198,
+                    "13": 32,
+                    "14": 116,
+                    "15": 135,
+                    "16": 247,
+                    "17": 163,
+                    "18": 172,
+                    "19": 52,
+                    "20": 221,
+                    "21": 39,
+                    "22": 183,
+                    "23": 104,
+                    "24": 150,
+                    "25": 228,
+                    "26": 36,
+                    "27": 159,
+                    "28": 47,
+                    "29": 42,
+                    "30": 62,
+                    "31": 11
+                  }
+                }
+              },
+              "messageType": "conversation",
+              "messageTimestamp": 1763418026,
+              "instanceId": "15d31f84-99ba-4534-b597-2ca01fc63441",
+              "source": "ios"
+            },
+            "destination": "https://quickaiautomation.app.n8n.cloud/webhook-test/4401d2fb-0746-45e6-8a45-0b83d5b4a20b",
+            "date_time": "2025-11-17T19:20:26.314Z",
+            "sender": "SEU_NUMERO_AQUI@s.whatsapp.net",
+            "server_url": "https://n8n-automacoes-evolution-api.mm95cz.easypanel.host",
+            "apikey": "SUA_EVOLUTION_API_KEY_AQUI"
+          },
+          "webhookUrl": "https://quickaiautomation.app.n8n.cloud/webhook-test/4401d2fb-0746-45e6-8a45-0b83d5b4a20b",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "ComandoDesbloquear?": {
+      "main": [
+        [
+          {
+            "node": "RemoverChaveBloqueio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "bloqueado?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recebe mensagem1": {
+      "main": [
+        [
+          {
+            "node": "Filtra os dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pega base64 imagem1": {
+      "main": [
+        [
+          {
+            "node": "Converte o base64 em imagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pega base64 audio1": {
+      "main": [
+        [
+          {
+            "node": "Converte o base64 em audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unifica os dados1": {
+      "main": [
+        [
+          {
+            "node": "RegistraMensagem1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analisa Imagem1": {
+      "main": [
+        [
+          {
+            "node": "Unifica os dados1",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Transcreve audio1": {
+      "main": [
+        [
+          {
+            "node": "Unifica os dados1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tipagem de mensagem1": {
+      "main": [
+        [
+          {
+            "node": "Pega base64 audio1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "MensagemTexto1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pega base64 imagem1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BuscaMensagem1": {
+      "main": [
+        [
+          {
+            "node": "verificaSeTemMaisMensagens1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RegistraMensagem1": {
+      "main": [
+        [
+          {
+            "node": "BuscaMensagem1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "verificaSeTemMaisMensagens1": {
+      "main": [
+        [
+          {
+            "node": "limpando os testes de fluxo1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Espera4Segundos1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "VerificaMensagem1": {
+      "main": [
+        [
+          {
+            "node": "OrganizaMensagem1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OrganizaMensagem1": {
+      "main": [
+        [
+          {
+            "node": "limpa a fila1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MensagemTexto1": {
+      "main": [
+        [
+          {
+            "node": "Unifica os dados1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "SeparandoMensagemEmPartes1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "limpa a fila1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "limpando os testes de fluxo1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SeparandoMensagemEmPartes1": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "envia uma mensagem por vez1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me1": {
+      "main": [
+        [
+          {
+            "node": "envia uma mensagem por vez1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EnviarespostaAoCliente1": {
+      "main": [
+        [
+          {
+            "node": "Espera 1 segundo1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LimpaMensagem1": {
+      "main": [
+        [
+          {
+            "node": "EnviarespostaAoCliente1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "envia uma mensagem por vez1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "LimpaMensagem1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ChecaLimiteMensagens1": {
+      "main": [
+        [
+          {
+            "node": "EscalaParaHumano1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace Me1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EscalaParaHumano1": {
+      "main": [
+        [
+          {
+            "node": "Replace Me1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cadastra o cliente1": {
+      "main": [
+        [
+          {
+            "node": "Tipagem de mensagem1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pega os dados do Cliente1": {
+      "main": [
+        [
+          {
+            "node": "checarCliente1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "checarCliente1": {
+      "main": [
+        [
+          {
+            "node": "cadastra o cliente1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "contador_de_mensagens",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "NaoFazNada1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FromMe?": {
+      "main": [
+        [
+          {
+            "node": "chave_bloqueio1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ComandoDesbloquear?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "configuração Global1": {
+      "main": [
+        [
+          {
+            "node": "FromMe?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "bloqueado?1": {
+      "main": [
+        [
+          {
+            "node": "bloqueioExiste?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Espera4Segundos1": {
+      "main": [
+        [
+          {
+            "node": "VerificaMensagem1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "bloqueioExiste?1": {
+      "main": [
+        [
+          {
+            "node": "IgnoraMensagem1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pega os dados do Cliente1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Espera 1 segundo1": {
+      "main": [
+        [
+          {
+            "node": "ChecaLimiteMensagens1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "contador_de_mensagens": {
+      "main": [
+        [
+          {
+            "node": "Tipagem de mensagem1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Converte o base64 em imagem": {
+      "main": [
+        [
+          {
+            "node": "Analisa Imagem1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Converte o base64 em audio": {
+      "main": [
+        [
+          {
+            "node": "Transcreve audio1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtra os dados": {
+      "main": [
+        [
+          {
+            "node": "configuração Global1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "3izS12nA01KCzCRO"
+  },
+  "versionId": "6393b68e-b8c7-4ff8-9b38-c40e8590d163",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9c92701cdb48281154ad624eeeca4a6739a2b2ed112fc4a143ad41555270a5c0"
+  },
+  "id": "3izS12nA01KCzCRO",
+  "tags": [
+    {
+      "updatedAt": "2025-11-17T22:36:46.610Z",
+      "createdAt": "2025-11-17T22:36:46.610Z",
+      "id": "JSSRe4aPyYkJEb3z",
+      "name": "clinical_agent"
+    }
+  ]
+}

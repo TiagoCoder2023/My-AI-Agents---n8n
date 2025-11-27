@@ -1,0 +1,1882 @@
+{
+  "name": "NewMusic_automation",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b739c470-bcfe-4d75-894b-792bf459b7f1",
+              "name": "cliente.Nome",
+              "value": "={{ $json.body.data.pushName }}",
+              "type": "string"
+            },
+            {
+              "id": "13d7132f-8e39-4bbf-9090-395d7f8cc421",
+              "name": "cliente.Numero",
+              "value": "={{ $json.body.data.key.remoteJid.replaceAll('@s.whatsapp.net','') }}",
+              "type": "string"
+            },
+            {
+              "id": "801441ac-40c7-4692-b74c-96a113e8b06e",
+              "name": "cliente.UltimaMensagem",
+              "value": "={{ $json.body.data.key.fromMe }}",
+              "type": "boolean"
+            },
+            {
+              "id": "7d300ead-226b-4e42-8d7a-c706861edcd6",
+              "name": "wpp.TipoDeMensagem",
+              "value": "={{ $json.body.data.messageType }}",
+              "type": "string"
+            },
+            {
+              "id": "bc9c971d-43dd-463a-99d8-8d8b19cf9dfe",
+              "name": "cliente.Data",
+              "value": "={{ $json.body.date_time.toDateTime().format('dd/MM/yyyy') }}",
+              "type": "string"
+            },
+            {
+              "id": "842be4a9-c5f6-46d5-8f50-7de1279e749a",
+              "name": "wpp.Mensagem",
+              "value": "={{ $json.body.data.message.audioMessage?.base64 || $json.body.data.message?.base64  || $json.body.data.message.conversation || null }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        32
+      ],
+      "id": "9fbc8527-b129-4499-95b9-db5ed1fb213e",
+      "name": "Filtra os dados"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "4401d2fb-0746-45e6-8a45-0b83d5b4a20b",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        128
+      ],
+      "id": "34ea4546-8dac-4eaf-a223-364f94a07a80",
+      "name": "Recebe mensagem",
+      "webhookId": "4401d2fb-0746-45e6-8a45-0b83d5b4a20b"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base64",
+        "options": {
+          "mimeType": "audio/ogg"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1840,
+        80
+      ],
+      "id": "8b4dbce5-cb42-4e7e-82ea-cb9e5d91f1c6",
+      "name": "Converte o base64 em audio"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base64",
+        "options": {
+          "mimeType": "image/jpeg"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1824,
+        416
+      ],
+      "id": "5d27d1c5-a36b-45d5-a1ff-2813b472fb4d",
+      "name": "Converte o base64 em audio1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.URL_EVOLUTION }}/chat/getBase64FromMediaMessage/newmusic",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "SUA_EVOLUTION_API_KEY_AQUI"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"message\": {\n    \"key\": {\n      \"id\": \"{{ $('Recebe mensagem').item.json.body.data.key.id }}\"\n    }\n  },\n  \"convertToMp4\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1568,
+        80
+      ],
+      "id": "d55cca70-acea-4b35-92ad-969c6d3bf6ab",
+      "name": "Pega base64 audio"
+    },
+    {
+      "parameters": {
+        "content": "## Recebe Mensagem\n## Abre Tickets de Atendimento\n",
+        "height": 624,
+        "width": 1328,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        -16
+      ],
+      "id": "4b365d5f-9884-49a9-a6c8-4cfc7e0b93c2",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2288,
+        240
+      ],
+      "id": "d4ee9373-e730-4f42-90b4-0bd74e9c5cd1",
+      "name": "Unifica os dados"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "text": "O que tem nessa imagem ? me de a resposta como se fosse um cliente descrevendo na imagem, comece dizendo: te enviei uma imagem que... Sempre em primeira pessoa, como se você fosse o cliente. Ao invés de dizer você me enviou, diga eu te enviei",
+        "inputType": "base64",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        2080,
+        416
+      ],
+      "id": "601dfe53-348e-4051-8d07-28efc46a1bb0",
+      "name": "Analisa Imagem",
+      "credentials": {
+        "openAiApi": {
+          "id": "16UpxIOAFlytv19r",
+          "name": "openAI_QUICK"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        2080,
+        80
+      ],
+      "id": "8a7b05e2-0211-4163-9e32-4038980f77e1",
+      "name": "Transcreve audio",
+      "credentials": {
+        "openAiApi": {
+          "id": "16UpxIOAFlytv19r",
+          "name": "openAI_QUICK"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Filtra os dados').item.json.wpp.TipoDeMensagem }}",
+                    "rightValue": "audioMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "e153912c-6097-4dd5-a97a-0bf40ea7bfee"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "20f6f952-5976-4efa-9052-6017953b99ee",
+                    "leftValue": "={{ $('Filtra os dados').item.json.wpp.TipoDeMensagem }}",
+                    "rightValue": "conversation",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Texto"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fab25a51-da5b-445f-835f-984e0b2bce11",
+                    "leftValue": "={{ $('Filtra os dados').item.json.wpp.TipoDeMensagem }}",
+                    "rightValue": "imageMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Imagem"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1344,
+        240
+      ],
+      "id": "335bd966-43a4-4cdf-a983-fff4ee778c75",
+      "name": "Tipagem de mensagem"
+    },
+    {
+      "parameters": {
+        "content": "## Identifica tipo de mensagem e analisa imagem e transcreve audio\n\n",
+        "height": 624,
+        "width": 1152,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1312,
+        -16
+      ],
+      "id": "a05c559a-2e7a-4407-8c00-78ad3cf78d5f",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "Name",
+        "key": "={{ 'newMusic:queue:' + $('Filtra os dados').item.json.cliente.Numero }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        32,
+        1040
+      ],
+      "id": "44476da1-ce9a-430c-acbc-735c1643f7bc",
+      "name": "BuscaMensagem",
+      "credentials": {
+        "redis": {
+          "id": "Xf7ecXrJNgAhCGHC",
+          "name": "Redis_automacoes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "push",
+        "list": "={{ 'newMusic:queue:' + $('Filtra os dados').item.json.cliente.Numero }}",
+        "messageData": "={{ $json.values().join(\"\\n\") }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        16,
+        704
+      ],
+      "id": "aefa5750-051a-4611-8739-a00a637238d4",
+      "name": "RegistraMensagem",
+      "credentials": {
+        "redis": {
+          "id": "Xf7ecXrJNgAhCGHC",
+          "name": "Redis_automacoes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3a0a3160-d328-40a7-b272-62a3353833b5",
+              "leftValue": "={{ $json.Name.length }}",
+              "rightValue": 5,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        848
+      ],
+      "id": "a8616f83-2344-40e4-9205-0d9cfdeefa3e",
+      "name": "verificaSeTemMaisMensagens"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "Name",
+        "key": "={{ 'newMusic:queue:' + $('Filtra os dados').item.json.cliente.Numero }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        400,
+        1184
+      ],
+      "id": "10f3b437-d50a-49c2-9ba4-de765b741e70",
+      "name": "VerificaMensagem",
+      "credentials": {
+        "redis": {
+          "id": "Xf7ecXrJNgAhCGHC",
+          "name": "Redis_automacoes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0d01b254-3522-434f-b13b-1ade5326141e",
+              "name": "Name",
+              "value": "={{ $json.Name.reverse().join(\"\\n\") }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        592,
+        880
+      ],
+      "id": "5c84177c-6bf0-4491-b01e-7127e7cb76a4",
+      "name": "OrganizaMensagem"
+    },
+    {
+      "parameters": {
+        "content": "## Cria uma fila de mensagens",
+        "height": 736,
+        "width": 832,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        624
+      ],
+      "id": "1ba7ea90-0ec2-4e5d-b6df-c6fc78fe9a1a",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3980cad6-e119-4c2b-a434-7f12c8ad4299",
+              "name": "Mensagem",
+              "value": "={{ $('Filtra os dados').item.json.wpp.Mensagem }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1728,
+        256
+      ],
+      "id": "ef43f77d-d23d-4c79-9676-d151895510f7",
+      "name": "MensagemTexto"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1264,
+        848
+      ],
+      "id": "11b6de8a-0cb1-489f-8143-dcd3a505f391",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "16UpxIOAFlytv19r",
+          "name": "openAI_QUICK"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        592,
+        704
+      ],
+      "id": "af79d5b1-d566-415d-80b7-802f9309d17a",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ 'newMusic:queue:' + $('Filtra os dados').item.json.cliente.Numero }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        656,
+        1152
+      ],
+      "id": "d7751931-9909-43db-9560-3432a94389ff",
+      "name": "limpa a fila",
+      "credentials": {
+        "redis": {
+          "id": "Xf7ecXrJNgAhCGHC",
+          "name": "Redis_automacoes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ 'newMusic:queue:' + $('Filtra os dados').item.json.cliente.Numero }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        368,
+        720
+      ],
+      "id": "ee3585ea-be24-4198-a886-2f711238f1fe",
+      "name": "limpando os testes de fluxo",
+      "credentials": {
+        "redis": {
+          "id": "Xf7ecXrJNgAhCGHC",
+          "name": "Redis_automacoes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Agente de IA\n",
+        "height": 736,
+        "width": 1136,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        816,
+        624
+      ],
+      "id": "d5aec642-4ea5-4783-b61e-207f9c9dab3c",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3200bdfe-5881-43e0-9991-921c18a96289",
+              "name": "Resposta",
+              "value": "={{ $json.output.split('\\n\\n') }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1968,
+        736
+      ],
+      "id": "1ba1a43a-e107-4066-9deb-aaa6d37ca913",
+      "name": "SeparandoMensagemEmPartes"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "Resposta",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2016,
+        1008
+      ],
+      "id": "49bdece8-fdf5-41f1-90a6-354dab61a874",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        2816,
+        1056
+      ],
+      "id": "66a3127d-254a-43df-be8f-40d2148a9f70"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.URL_EVOLUTION }}/message/sendText/newmusic",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "SUA_EVOLUTION_API_KEY_AQUI"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": {{ JSON.stringify($('Filtra os dados').item.json.cliente.Numero) }},\n  \"text\": {{ JSON.stringify($json.Resposta) }}\n}\n\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2416,
+        944
+      ],
+      "id": "e8885af1-8b58-41c1-b57a-639179e191fc",
+      "name": "EnviarespostaAoCliente"
+    },
+    {
+      "parameters": {
+        "amount": 4
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        1120
+      ],
+      "id": "8992ed00-b6d2-4ad1-bfc6-a524d5b658b6",
+      "name": "Espera8Segundos",
+      "webhookId": "25984ca0-664b-42e8-9ff1-80403eeb4c78"
+    },
+    {
+      "parameters": {
+        "content": "## Separa, prepara e envia as mensagens uma por uma",
+        "height": 736,
+        "width": 1072,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1968,
+        624
+      ],
+      "id": "0541c393-a61c-411b-a553-afd319a88110",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2224,
+        768
+      ],
+      "id": "a659f5c1-7032-4079-a76d-ad5e06e0deb0",
+      "name": "envia uma mensagem por vez"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "messages",
+          "mode": "list",
+          "cachedResultName": "messages"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": 1,
+            "prompt_id": 1,
+            "phone": "={{ $('Filtra os dados').item.json.cliente.Numero }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "prompt_id",
+              "displayName": "prompt_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        688,
+        160
+      ],
+      "id": "9aa12cfb-485f-4a83-8264-9ae1831ce5ad",
+      "name": "cadastra o cliente",
+      "credentials": {
+        "postgres": {
+          "id": "y7U9gyQragsq7Cyo",
+          "name": "Postgres_newMusic"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "30681789-55d3-4fb4-aea3-f7981c8e99f9",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        448
+      ],
+      "id": "9fd7b116-d4d6-49dd-aeca-bd50c8d127a9",
+      "name": "checarCliente"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2656,
+        944
+      ],
+      "id": "b0dc2278-365d-433f-8660-6143e2212f54",
+      "name": "Espera 3 segundo",
+      "webhookId": "7e64b6e7-9da1-4485-8747-107721861246"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "messages",
+          "mode": "list",
+          "cachedResultName": "messages"
+        },
+        "where": {
+          "values": [
+            {
+              "column": "phone",
+              "value": "={{ $json.cliente.Numero }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        192,
+        448
+      ],
+      "id": "b8a2162d-b9c4-4382-b41c-ab5f97dfbfba",
+      "name": "Pega os dados do Cliente1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "y7U9gyQragsq7Cyo",
+          "name": "Postgres_newMusic"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('OrganizaMensagem').item.json.Name }}",
+        "options": {
+          "systemMessage": "={{ $json.prompt }}\n\n<utilizar_consulta_prompt>\n-SEMPRE utilizar a tool \"consulta_prompt\" para identificar o ID de cada prompt de setor que será utilizado para alterar o ID na tool \"alterar_prompts\"\n\nObservação:\nNUNCA utilize as informações dos setores para enviar ao usuário.\n<utilizar_consulta_prompt>\n\n<Instrução_geral_limpa_memoria>\n-Utilizar a tool \"limpa_memoria\", SEMPRE que o cliente alternar de um setor para outro.\n-NUNCA utilizar a tool \"limpa_memoria\" durante uma conversa convencional.\n<Instrução_geral_limpa_memoria>\n\n<link_de_cadastro>\nPara enviar o link de cadastro do cliente novo, use o link gerado pelo node \"link_cadastro\" {{ $('link_cadastro').item.hash }}\n<link_de_cadastro>"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1504,
+        688
+      ],
+      "id": "c365cf8b-f741-469c-a8d6-c8dc26842225",
+      "name": "AtendentePrincipal"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "messages",
+          "mode": "list",
+          "cachedResultName": "messages"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "prompt_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('prompt_id', ``, 'number') }}",
+            "phone": "={{ $('DEFINE_PROMPT').item.json.phone }}"
+          },
+          "matchingColumns": [
+            "phone"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "prompt_id",
+              "displayName": "prompt_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        1584,
+        1056
+      ],
+      "id": "739b6050-4e43-4266-a7ec-8601aa6a8b69",
+      "name": "alterar_prompts",
+      "credentials": {
+        "postgres": {
+          "id": "y7U9gyQragsq7Cyo",
+          "name": "Postgres_newMusic"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "messages",
+          "mode": "list",
+          "cachedResultName": "messages"
+        },
+        "limit": 1000,
+        "where": {
+          "values": [
+            {
+              "column": "phone",
+              "value": "={{ $('Filtra os dados').item.json.cliente.Numero }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        928,
+        1040
+      ],
+      "id": "38dde049-49cb-4fa8-a14a-6a7495add3ad",
+      "name": "DEFINE_PROMPT",
+      "credentials": {
+        "postgres": {
+          "id": "y7U9gyQragsq7Cyo",
+          "name": "Postgres_newMusic"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "prompts",
+          "mode": "list",
+          "cachedResultName": "prompts"
+        },
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "id",
+              "value": "={{ $json.prompt_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        896,
+        736
+      ],
+      "id": "aaeb9ee5-30cd-4a8e-8c25-90fbf125340a",
+      "name": "PROMPT",
+      "credentials": {
+        "postgres": {
+          "id": "y7U9gyQragsq7Cyo",
+          "name": "Postgres_newMusic"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteTable",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_chat_histories",
+          "mode": "list",
+          "cachedResultName": "n8n_chat_histories"
+        },
+        "deleteCommand": "delete",
+        "where": {
+          "values": [
+            {
+              "column": "session_id",
+              "value": "={{ $('Filtra os dados').item.json.cliente.Numero }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        1744,
+        1056
+      ],
+      "id": "02d00263-6509-4092-b9f3-31880c995b26",
+      "name": "limpa_memoria",
+      "credentials": {
+        "postgres": {
+          "id": "y7U9gyQragsq7Cyo",
+          "name": "Postgres_newMusic"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "prompts",
+          "mode": "list",
+          "cachedResultName": "prompts"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        1424,
+        1056
+      ],
+      "id": "afc628be-3012-4028-b78d-125e8fc0af05",
+      "name": "consultar_prompts",
+      "credentials": {
+        "postgres": {
+          "id": "y7U9gyQragsq7Cyo",
+          "name": "Postgres_newMusic"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## ALTERA PROMPTS\n## LIMPA MEMÓRIA",
+        "height": 176,
+        "width": 704,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        1008
+      ],
+      "id": "d7b3e89c-444e-48ef-8bdb-09a58f016cda",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Filtra os dados').item.json.cliente.Numero }}",
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        1408,
+        864
+      ],
+      "id": "8d196ffd-e594-40d7-8abf-431f98d88d9e",
+      "name": "memória_IA",
+      "credentials": {
+        "postgres": {
+          "id": "y7U9gyQragsq7Cyo",
+          "name": "Postgres_newMusic"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"email\":\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1088,
+        496
+      ],
+      "id": "975a3b94-ab10-454c-a651-884e1462627c",
+      "name": "abre_ticket",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "B5w7wuBZiBPoP6oe",
+          "name": "X-API-Key_newMusic"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## CHAMADA API:\n## Base de Conhecimento\n## Status TICKETS\n",
+        "height": 144,
+        "width": 704,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        1200
+      ],
+      "id": "0fe4e683-819b-4244-9584-0c115607ba31",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        1440,
+        1216
+      ],
+      "id": "fdfa5806-fcfa-442f-8760-41a217b91833",
+      "name": "fechar_ticket"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1136,
+        736
+      ],
+      "id": "1346316c-1359-4afb-b91c-818739213a1e",
+      "name": "base_conhecimento"
+    },
+    {
+      "parameters": {
+        "toolDescription": "=Use essa tool para identificar as bases de conhecimento de cada setor para responder os questionamentos dos clientes.\n\nOBSERVAÇÃO:\nNÃO diga ao cliente que está consultando a base de conhecimento.\nApenas use para responder ao cliente o que ele perguntou, caso não encontre a informação, diga que não pode ajudar com isso.",
+        "method": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "SUA_BASE_CONHECIMENTO_API_KEY_AQUI"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        1728,
+        1216
+      ],
+      "id": "e8beab93-34b3-46ef-a112-b2d7cbde46b7",
+      "name": "baseDeConhecimento"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"phone\": \"SEU_NUMERO_AQUI\",\n    \"name\": \"Nome Exemplo\",\n    \"email\": \"email@exemplo.com\",\n    \"doc\": \"CPF/CNPJ\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1104,
+        144
+      ],
+      "id": "bfa8c407-27cb-4786-9084-c52bedcec0b1",
+      "name": "link_cadastro",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "B5w7wuBZiBPoP6oe",
+          "name": "X-API-Key_newMusic"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"email\": \"email@exemplo.com\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        704,
+        464
+      ],
+      "id": "24b9f68d-9ca3-4bc7-9855-fcf71add9c54",
+      "name": "consulta_cliente",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "B5w7wuBZiBPoP6oe",
+          "name": "X-API-Key_newMusic"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3ac0d005-d836-4bdb-bb56-1bf97ba80088",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        912,
+        304
+      ],
+      "id": "fe765916-2f33-497c-b21e-8a35cd652942",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.URL_EVOLUTION }}/chat/getBase64FromMediaMessage/newmusic",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "SUA_EVOLUTION_API_KEY_AQUI"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"message\": {\n    \"key\": {\n      \"id\": \"{{ $('Recebe mensagem').item.json.body.data.key.id }}\"\n    }\n  },\n  \"convertToMp4\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1584,
+        416
+      ],
+      "id": "2366e926-3ce1-44f3-b68f-05282aa41b3f",
+      "name": "Pega base64 Imagem"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Filtra os dados": {
+      "main": [
+        [
+          {
+            "node": "Pega os dados do Cliente1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recebe mensagem": {
+      "main": [
+        [
+          {
+            "node": "Filtra os dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Converte o base64 em audio": {
+      "main": [
+        [
+          {
+            "node": "Transcreve audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Converte o base64 em audio1": {
+      "main": [
+        [
+          {
+            "node": "Analisa Imagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pega base64 audio": {
+      "main": [
+        [
+          {
+            "node": "Converte o base64 em audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unifica os dados": {
+      "main": [
+        [
+          {
+            "node": "abre_ticket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analisa Imagem": {
+      "main": [
+        [
+          {
+            "node": "Unifica os dados",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Transcreve audio": {
+      "main": [
+        [
+          {
+            "node": "Unifica os dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tipagem de mensagem": {
+      "main": [
+        [
+          {
+            "node": "Pega base64 audio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "MensagemTexto",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pega base64 Imagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BuscaMensagem": {
+      "main": [
+        [
+          {
+            "node": "verificaSeTemMaisMensagens",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RegistraMensagem": {
+      "main": [
+        [
+          {
+            "node": "BuscaMensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "verificaSeTemMaisMensagens": {
+      "main": [
+        [
+          {
+            "node": "limpando os testes de fluxo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Espera8Segundos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "VerificaMensagem": {
+      "main": [
+        [
+          {
+            "node": "OrganizaMensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OrganizaMensagem": {
+      "main": [
+        [
+          {
+            "node": "limpa a fila",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MensagemTexto": {
+      "main": [
+        [
+          {
+            "node": "Unifica os dados",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AtendentePrincipal",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "limpa a fila": {
+      "main": [
+        [
+          {
+            "node": "DEFINE_PROMPT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "limpando os testes de fluxo": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SeparandoMensagemEmPartes": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "envia uma mensagem por vez",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "envia uma mensagem por vez",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EnviarespostaAoCliente": {
+      "main": [
+        [
+          {
+            "node": "Espera 3 segundo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Espera8Segundos": {
+      "main": [
+        [
+          {
+            "node": "VerificaMensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "envia uma mensagem por vez": {
+      "main": [
+        [],
+        [
+          {
+            "node": "EnviarespostaAoCliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cadastra o cliente": {
+      "main": [
+        [
+          {
+            "node": "consulta_cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "checarCliente": {
+      "main": [
+        [
+          {
+            "node": "cadastra o cliente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "consulta_cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Espera 3 segundo": {
+      "main": [
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pega os dados do Cliente1": {
+      "main": [
+        [
+          {
+            "node": "checarCliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AtendentePrincipal": {
+      "main": [
+        [
+          {
+            "node": "SeparandoMensagemEmPartes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "alterar_prompts": {
+      "ai_tool": [
+        [
+          {
+            "node": "AtendentePrincipal",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DEFINE_PROMPT": {
+      "main": [
+        [
+          {
+            "node": "PROMPT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PROMPT": {
+      "main": [
+        [
+          {
+            "node": "base_conhecimento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "limpa_memoria": {
+      "ai_tool": [
+        [
+          {
+            "node": "AtendentePrincipal",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "consultar_prompts": {
+      "ai_tool": [
+        [
+          {
+            "node": "AtendentePrincipal",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "memória_IA": {
+      "ai_memory": [
+        [
+          {
+            "node": "AtendentePrincipal",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "abre_ticket": {
+      "main": [
+        [
+          {
+            "node": "RegistraMensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fechar_ticket": {
+      "ai_tool": [
+        [
+          {
+            "node": "AtendentePrincipal",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "base_conhecimento": {
+      "main": [
+        [
+          {
+            "node": "AtendentePrincipal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "baseDeConhecimento": {
+      "ai_tool": [
+        [
+          {
+            "node": "AtendentePrincipal",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "link_cadastro": {
+      "main": [
+        [
+          {
+            "node": "Tipagem de mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "consulta_cliente": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "link_cadastro",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Tipagem de mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pega base64 Imagem": {
+      "main": [
+        [
+          {
+            "node": "Converte o base64 em audio1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "77c4264e-1158-4ad3-ae52-488b1c2fe6cf",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9c92701cdb48281154ad624eeeca4a6739a2b2ed112fc4a143ad41555270a5c0"
+  },
+  "id": "XDxuD3mJT80IZ4xX",
+  "tags": []
+}

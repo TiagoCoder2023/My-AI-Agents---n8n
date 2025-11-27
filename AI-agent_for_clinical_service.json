@@ -1,0 +1,1529 @@
+{
+  "name": "dai_automacao",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b739c470-bcfe-4d75-894b-792bf459b7f1",
+              "name": "cliente.Nome",
+              "value": "={{ $json.body.data.pushName }}",
+              "type": "string"
+            },
+            {
+              "id": "13d7132f-8e39-4bbf-9090-395d7f8cc421",
+              "name": "cliente.Numero",
+              "value": "={{ $json.body.data.key.remoteJid.replaceAll('@s.whatsapp.net','') }}",
+              "type": "string"
+            },
+            {
+              "id": "801441ac-40c7-4692-b74c-96a113e8b06e",
+              "name": "cliente.UltimaMensagem",
+              "value": "={{ $json.body.data.key.fromMe }}",
+              "type": "boolean"
+            },
+            {
+              "id": "7d300ead-226b-4e42-8d7a-c706861edcd6",
+              "name": "wpp.TipoDeMensagem",
+              "value": "={{ $json.body.data.messageType }}",
+              "type": "string"
+            },
+            {
+              "id": "bc9c971d-43dd-463a-99d8-8d8b19cf9dfe",
+              "name": "cliente.Data",
+              "value": "={{ $json.body.date_time.toDateTime().format('dd/MM/yyyy') }}",
+              "type": "string"
+            },
+            {
+              "id": "842be4a9-c5f6-46d5-8f50-7de1279e749a",
+              "name": "wpp.Mensagem",
+              "value": "={{ $json.body.data.message.audioMessage?.base64 || $json.body.data.message?.base64  || $json.body.data.message.conversation || null }}",
+              "type": "string"
+            },
+            {
+              "id": "a5a591b9-6a3c-4c1d-905c-b32c5d6ba20a",
+              "name": "establishment_id",
+              "value": 1,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -16,
+        304
+      ],
+      "id": "35dda878-ec9a-4632-98d0-addb13adfd17",
+      "name": "Filtra os dados"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base64",
+        "options": {
+          "mimeType": "audio/ogg"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1328,
+        -64
+      ],
+      "id": "348f2569-4889-4b96-aaae-2acc6eae0248",
+      "name": "Converte o base64 em audio"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base64",
+        "options": {
+          "mimeType": "image/jpeg"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1216,
+        304
+      ],
+      "id": "c33f202c-c9ae-4b90-9766-aa1827933580",
+      "name": "Converte o base64 em audio1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n-automacoes-evolution-api.mm95cz.easypanel.host/chat/getBase64FromMediaMessage/DaiaraLaser",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "SUA_EVOLUTION_API_KEY_AQUI"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"message\": {\n    \"key\": {\n      \"id\": \"{{ $('Recebe Mensagem').item.json.body.data.key.id }}\"\n    }\n  },\n  \"convertToMp4\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1056,
+        -64
+      ],
+      "id": "0ee2b239-3a5a-4046-87b6-81763ed98b0e",
+      "name": "Pega base64 audio"
+    },
+    {
+      "parameters": {
+        "content": "## Recebe Mensagem\n",
+        "height": 624,
+        "width": 944,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        -128
+      ],
+      "id": "802fa818-3527-47ad-93c0-8067f7fdae5a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1808,
+        112
+      ],
+      "id": "919e392b-0cb6-41bc-b2fd-9fcf5842c16d",
+      "name": "Unifica os dados"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "text": "O que tem nessa imagem ? me de a resposta como se fosse um cliente descrevendo na imagem, comece dizendo: te enviei uma imagem que... Sempre em primeira pessoa, como se você fosse o cliente. Ao invés de dizer você me enviou, diga eu te enviei",
+        "inputType": "base64",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1504,
+        304
+      ],
+      "id": "ac309128-2f28-46a4-b49d-47d24a7cede3",
+      "name": "Analisa Imagem",
+      "credentials": {
+        "openAiApi": {
+          "id": "16UpxIOAFlytv19r",
+          "name": "openAI_QUICK"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1568,
+        -64
+      ],
+      "id": "6ca153c1-b830-41e8-a851-7fa25293ef98",
+      "name": "Transcreve audio",
+      "credentials": {
+        "openAiApi": {
+          "id": "16UpxIOAFlytv19r",
+          "name": "openAI_QUICK"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Filtra os dados').item.json.wpp.TipoDeMensagem }}",
+                    "rightValue": "audioMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "e153912c-6097-4dd5-a97a-0bf40ea7bfee"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "20f6f952-5976-4efa-9052-6017953b99ee",
+                    "leftValue": "={{ $('Filtra os dados').item.json.wpp.TipoDeMensagem }}",
+                    "rightValue": "conversation",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Texto"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fab25a51-da5b-445f-835f-984e0b2bce11",
+                    "leftValue": "={{ $('Filtra os dados').item.json.wpp.TipoDeMensagem }}",
+                    "rightValue": "imageMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Imagem"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        848,
+        96
+      ],
+      "id": "ff220f95-fa42-4249-8163-97f484aa8515",
+      "name": "Tipagem de mensagem"
+    },
+    {
+      "parameters": {
+        "content": "## Identifica tipo de mensagem e analisa imagem e transcreve audio\n\n",
+        "height": 624,
+        "width": 1104,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        832,
+        -128
+      ],
+      "id": "71e5a9a9-aecc-4012-be90-4f94e6a8a56d",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "Name",
+        "key": "={{ 'daiaralaser:queue:' + $('Filtra os dados').item.json.cliente.Numero }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        2032,
+        256
+      ],
+      "id": "4361543f-06ef-4a34-a2fd-a49f27254537",
+      "name": "BuscaMensagem",
+      "credentials": {
+        "redis": {
+          "id": "Xf7ecXrJNgAhCGHC",
+          "name": "Redis_automacoes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "push",
+        "list": "={{ 'daiaralaser:queue:' + $('Filtra os dados').item.json.cliente.Numero }}",
+        "messageData": "={{ $json.values().join(\"\\n\") }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        2016,
+        16
+      ],
+      "id": "89bda75f-910b-4093-b650-b0374777bc59",
+      "name": "RegistraMensagem",
+      "credentials": {
+        "redis": {
+          "id": "Xf7ecXrJNgAhCGHC",
+          "name": "Redis_automacoes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3a0a3160-d328-40a7-b272-62a3353833b5",
+              "leftValue": "={{ $json.Name.length }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2240,
+        112
+      ],
+      "id": "058b75f9-7ae0-49aa-9e75-2d9e832e1487",
+      "name": "verificaSeTemMaisMensagens"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "Name",
+        "key": "={{ 'daiaralaser:queue:' + $('Filtra os dados').item.json.cliente.Numero }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        2464,
+        336
+      ],
+      "id": "67dc7a89-302c-47fe-bda1-0af5d75c8d0a",
+      "name": "VerificaMensagem",
+      "credentials": {
+        "redis": {
+          "id": "Xf7ecXrJNgAhCGHC",
+          "name": "Redis_automacoes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0d01b254-3522-434f-b13b-1ade5326141e",
+              "name": "Name",
+              "value": "={{ $json.Name.reverse().join(\"\\n\") }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2688,
+        192
+      ],
+      "id": "e0429111-723c-4432-9d63-4e1ad855c752",
+      "name": "OrganizaMensagem"
+    },
+    {
+      "parameters": {
+        "content": "## Cria uma fila de mensagens",
+        "height": 624,
+        "width": 1184,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1952,
+        -128
+      ],
+      "id": "dce1dbed-d96e-4e9b-a158-14529ea1a69d",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3980cad6-e119-4c2b-a434-7f12c8ad4299",
+              "name": "Mensagem",
+              "value": "={{ $('Filtra os dados').item.json.wpp.Mensagem }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1312,
+        128
+      ],
+      "id": "6720ab4a-0248-4e6d-8076-735e3d7cf883",
+      "name": "MensagemTexto"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        720
+      ],
+      "id": "afafc9ce-bbf9-43fc-8a2a-372dd3939419",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "16UpxIOAFlytv19r",
+          "name": "openAI_QUICK"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2736,
+        -32
+      ],
+      "id": "fd6e1198-e8f8-4105-a507-55b50efb3291",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Filtra os dados').item.json.cliente.Numero }}",
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        848
+      ],
+      "id": "72b7e2ea-4fc2-49e8-aadd-e7d18343cb32",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "XhQ2rLSwSiaMKUri",
+          "name": "Postgres_dailaser"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ 'daiaralaser:queue:' + $('Filtra os dados').item.json.cliente.Numero }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        2976,
+        272
+      ],
+      "id": "670152c2-edce-46c3-9cfb-ad1ae9921591",
+      "name": "limpa a fila",
+      "credentials": {
+        "redis": {
+          "id": "Xf7ecXrJNgAhCGHC",
+          "name": "Redis_automacoes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ 'daiaralaser:queue:' + $('Filtra os dados').item.json.cliente.Numero }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        2448,
+        -32
+      ],
+      "id": "6de7032a-a26b-43a2-92a6-da066f3034ba",
+      "name": "limpando os testes de fluxo",
+      "credentials": {
+        "redis": {
+          "id": "Xf7ecXrJNgAhCGHC",
+          "name": "Redis_automacoes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Agente de IA\n",
+        "height": 592,
+        "width": 1136,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        512
+      ],
+      "id": "7a4673a4-24ee-427d-ba24-9db907da2d0c",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3200bdfe-5881-43e0-9991-921c18a96289",
+              "name": "Resposta",
+              "value": "={{ $json.output.split('\\n\\n') }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1280,
+        640
+      ],
+      "id": "3cb962b1-d77f-4632-b6f0-3e7ce799e2f9",
+      "name": "SeparandoMensagemEmPartes"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "Resposta",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        912
+      ],
+      "id": "71a2ee63-d0f0-4345-bb9f-88042d72b7a1",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        2176,
+        880
+      ],
+      "id": "bdb061c2-2cb1-42ae-b391-0732db74e413"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n-automacoes-evolution-api.mm95cz.easypanel.host/message/sendText/DaiaraLaser",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "SUA_EVOLUTION_API_KEY_AQUI"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": {{ JSON.stringify($('Filtra os dados').item.json.cliente.Numero) }},\n  \"text\": {{ JSON.stringify($json.Resposta) }}\n}\n\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1776,
+        768
+      ],
+      "id": "f111932c-9b97-4a64-a59b-c15aadc6a590",
+      "name": "EnviarespostaAoCliente"
+    },
+    {
+      "parameters": {
+        "amount": 4
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2272,
+        336
+      ],
+      "id": "74d7125b-d91a-4c08-8b07-666a45c01fdc",
+      "name": "Espera8Segundos",
+      "webhookId": "25984ca0-664b-42e8-9ff1-80403eeb4c78"
+    },
+    {
+      "parameters": {
+        "content": "## Separa, prepara e envia as mensagens uma por uma",
+        "height": 592,
+        "width": 1200,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1136,
+        512
+      ],
+      "id": "26c2cba1-eba5-48b3-82ee-82611beff022",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1584,
+        592
+      ],
+      "id": "651ffee1-2998-486e-be77-6dc62c85fb78",
+      "name": "envia uma mensagem por vez"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "messages",
+          "mode": "list",
+          "cachedResultName": "messages"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": 1,
+            "phone": "={{ $('Filtra os dados').item.json.cliente.Numero.replace(/[^0-9]/g, '') }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        512,
+        -16
+      ],
+      "id": "62fb83fa-a817-4ae1-91b1-75f01e181f5a",
+      "name": "cadastra o cliente",
+      "credentials": {
+        "postgres": {
+          "id": "XhQ2rLSwSiaMKUri",
+          "name": "Postgres_dailaser"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "30681789-55d3-4fb4-aea3-f7981c8e99f9",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        144
+      ],
+      "id": "6371d5af-f3ed-42b6-ae1b-6d036ebee9b8",
+      "name": "checarCliente"
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2016,
+        768
+      ],
+      "id": "a8aa94fe-e64f-4f7a-9036-6cdaf1dda0c3",
+      "name": "Espera 3 segundo",
+      "webhookId": "7e64b6e7-9da1-4485-8747-107721861246"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "messages",
+          "mode": "list",
+          "cachedResultName": "messages"
+        },
+        "where": {
+          "values": [
+            {
+              "column": "phone",
+              "value": "={{ $json.cliente.Numero.replace(/[^0-9]/g, '') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        144,
+        144
+      ],
+      "id": "5cd8437c-309f-4660-b900-782b0f76e7b5",
+      "name": "Pega os dados do Cliente1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "XhQ2rLSwSiaMKUri",
+          "name": "Postgres_dailaser"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n-automacoes-evolution-api.mm95cz.easypanel.host/chat/getBase64FromMediaMessage/DaiaraLaser",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "23BD6F45E339-44FD-89C6-077AEC14ED98"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"message\": {\n    \"key\": {\n      \"id\": \"{{ $('Recebe Mensagem').item.json.body.data.key.id }}\"\n    }\n  },\n  \"convertToMp4\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        992,
+        304
+      ],
+      "id": "151b2424-a47d-4606-af2b-9b9aa206bc5d",
+      "name": "Pega base64 audio1"
+    },
+    {
+      "parameters": {
+        "toolDescription": "=Chame essa ferramenta para cadastrar o cliente na plataforma de agendamento caso ele não esteja no sistema\n\nPreencha as informações fornecidas pelo cliente nas seguintes variáveis:\n\"Nome\": \"NOME que o cliente informou\",\n\"email\": \"EMAIL que o cliente informou\",\n\"phone\": \"{{ $('Filtra os dados').item.json.cliente.Numero }}\",\n\"DATA_NASCIMENTO\": \"DATA DE NASCIMENTO que o cliente informou\",\n\"endereco\": \"ENDEREÇO que o cliente informou\"",
+        "method": "POST",
+        "url": "https://quickaiagenda.com.br/api/clients",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "SUA_QUICKAI_AGENDA_API_KEY_AQUI"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ (() => {   let ai = $fromAI('JSON', '', 'json');  \n\nif (typeof ai === 'string') {     try { ai = JSON.parse(ai); } catch (e) { return ai; }   }      \nif (Array.isArray(ai)) {     if (ai[0]?.JSON) ai = ai[0].JSON;     else ai = ai[0];   }       if (ai?.JSON) ai = ai.JSON;       return JSON.stringify(ai); })() }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        1216
+      ],
+      "id": "fc8ed86c-d89b-4d8b-8035-bf52ffc61d20",
+      "name": "Cadastro"
+    },
+    {
+      "parameters": {
+        "toolDescription": "=Chame essa ferramenta SEMPRE para consultar o cliente na plataforma de agendamento, caso ele já exista retorne para o agente de cadastro que o cliente já existe.\n\nObservação 1:\nNÃO execute um novo cadastro caso já exista, apenas informe o agente principal. ",
+        "method": "POST",
+        "url": "https://quickaiagenda.com.br/api/client/phone",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "SUA_QUICKAI_AGENDA_API_KEY_AQUI"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"phone\": \"{{ $('Filtra os dados').item.json.cliente.Numero }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        304,
+        1216
+      ],
+      "id": "12477d76-4f5d-4a00-9b72-526afc393364",
+      "name": "consulta cliente"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('OrganizaMensagem').item.json.Name }}",
+        "options": {
+          "systemMessage": "=<quem_é_você>\nVocê é “Dai\" é a atendente da clínica de depilação a laser da Dra. Daiara. Ela atende os pacientes pelo WhatsApp, sendo  leve, clara e humana, fornecendo informações sobre procedimentos, esclarecendo dúvidas sobre consultas, procedimentos de depilação.\n<quem_é_você>\n\n<seu_objetivo>\nSerá o primeiro contato com o cliente e irá realizar todo o atendimento e guiar o cliente até agendamento, a Dai será responsável por repassar a primeira boa impressão para o paciente, construir uma relação de confiança, deve ter uma conversa amigável e usar empatia em todos os atendimentos, mostrar sempre interesse na conversa e forneça feedback nas conversas. Por exemplo: “entendo bem”, “compreendo”, “sei bem como é”.\n<seu_objetivo>\n\n<informações_da_empresa>\nSobre a DaiLaser\nA DaiLaser é uma clínica especializada exclusivamente em depilação a laser com tecnologia Light Sheer, o padrão ouro do mercado.\nAqui, cada cliente escolhe sua própria frequência, pois trabalhamos apenas com sessões avulsas — liberdade e resultado caminham juntos.\n\nNosso espaço é acolhedor, com atendimento humanizado e foco em fazer você se sentir confiante, confortável e linda do seu jeito. \n\n⸻\n\n Missão da empresa:\nProporcionar liberdade, autoestima e bem-estar por meio da depilação a laser, com tecnologia segura e atendimento que valoriza a individualidade de cada cliente.\n\n⸻\n\n Ética da empresa:\n\t•\tCuidado e acolhimento em cada detalhe\n\t•\tLiberdade de escolha (sem pacotes ou amarras)\n\t•\tTransparência e confiança\n\t•\tExcelência técnica com leveza\n\t•\tValorização da beleza natural e da autoconfiança\n<informações_da_empresa>\n\n<Instruções>\n- Siga o fluxo de atendimento;\n- Envie o link do canvas quando pedirem a tabela de preços https://www.canva.com/design/DAG1TVR6oIE/_QsJoGk6LS7YdgzhWmGZEw/edit?utm_content=DAG1TVR6oIE&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton\n- Seja gentil, comunicação calma e atenciosa;\n- Faça uma variação da linguagem, para parecer mais natural e menos robótico\n- Nunca diga que é uma IA ou atendente virtual.\n- Responda de forma clara e objetiva.\n- A cada 5 respostas enviadas ao cliente, utilize um emoji que tenha contexto com a conversa.\n\nObservação:\nSua mensagem será enviada por whatsapp, respeite a formatação e as regras de espaço e pontuação do whatsapp.\n<Instruções>\n\n<fluxo_de_atendimento>\n### \n Caminho 1: Cliente diz a área \n1. Responder com o valor estimado da área. \n2. Em seguida, perguntar: \n> Você já fez laser antes ou essa vai ser a primeira vez? --- \n### \n Caminho 2: Cliente pede a tabela completa \n1. Enviar a tabela de valores.  \n2. Depois enviar a mensagem: \n> Você já fez laser antes ou essa vai ser a primeira vez? \n --- \n \n### \n Se for a primeira vez que o usuário irá efetuar um procedimento envie a mensagem:  \n> Aaah perfeito, você vai AMAR, tá!? \n\n### \n\n Se a cliente perguntar sobre dor: \n \n> Fica tranquila! A gente ajusta o aparelho conforme sua sensibilidade \n> Sempre de um jeito confortável pra você, sem prejudicar o resultado. \n \n### \n \n<restrições>\n- NUNCA diga \"Um moneto !\" apenas execute o fluxo, para enviar links.\n- Não diz que é assistente virtual ou IA. \n- Não transfere o atendimento sem motivo real. \n- Não usa frases robóticas ou genéricas. \n- Não recomenda produtos, cremes ou diagnósticos. \n- Não fala sobre outras clínicas, nem sobre outros assuntos a não ser sobre a Dailaser.\n<restrições>\n### \n✅\n Finalização gentil, use emojis e agradeça pelo contato.\n<fluxo_de_atendimento>\n\n<Consulta_de_valores>\nEnvie o link do canvas Abaixo:\nhttps://www.canva.com/design/DAG1TVR6oIE/_QsJoGk6LS7YdgzhWmGZEw/edit?utm_content=DAG1TVR6oIE&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton\n\nObservação 1:\nEnvie uma mensagem amigável, antes de enviar o link.\n\nObservação 2:\nNÃO comente nada, nem antes, nem depois do link, envie em uma mensagem isolada.\n<Consulta_de_valores>\n\n<tool_consulta_cliente>\nNUNCA diga ao cliente que vai consultar o cadastro, consulte ao receber um pedido de agendamento sem esperar, a primeira tool a ser utilizada, antes de enviar as perguntas para o cadastro será a tool \"consulta cliente\", para consultar se já existe o cliente no sistema.\n\nObservação 1:\nNÃO comente nada nem antes nem depois de verificar o cliente, apenas siga o fluxo de tools.\n\nObservação 2:\nNÃO pergunte o número da cliente apenas use a expressão {{ $('Filtra os dados').item.json.cliente.Numero }} para consultar o número.\n\nObservação 3:\nCaso o cliente já esteja cadastrado, pule diretamente para a tool \"gerarLink\".\n\nObservação 4:\nSEMPRE consulte o cliente antes de enviar uma mensagem.\n<tool_consulta_cliente>\n\n<uso_de_tool_cadastro>\nUse a tool \"cadastro\" para clientes que quiserem agendar, terá apenas que efetuar o cadastro na tool \"cadastro\", colete as seguintes informações OBRIGATÓRIAS e preencha as variávies, nome, email, data de nascimento, endereço, tudo deve estar dentro de um JSON nesse modelo:\n\"establishment_id\": 1,\n\"name\": \"NOME que o cliente informou\",\n\"email\": \"EMAIL que o cliente informou\",\n\"phone\": \"{{ $('Filtra os dados').item.json.cliente.Numero }}\",\n\"birth_date\": \"DATA DE NASCIMENTO que o cliente informou no formato aaaa/mm/dd\",\n\"address\": \"ENDEREÇO que o cliente informou\"\n\nObservação 1:\nVocê só enviará as perguntas do cadastro caso não exista nenhum cadastro do cliente.\n\nObservação 2:\nNão comente nada antes ou depois da estrutura, retorne apenas a estrutura.\n\nObservação 3:\nNUNCA retorne a estrutura sem conseguir os dados utilizados.\n\nObservação 4: \nNão envie o array para o usuário, apenas guarde para seu uso.\n\nObservação 5:\nApós a confirmação do cadastro, envie o link da agenda, para o usuário efetuar o agendamento.\n\nObservação 6:\nNÃO pergunte mais de uma vez os dados do cliente, as informações só devem ser coletadas UMA vez.\n<uso_de_tool_cadastro>\n\n<uso_da_tool_gerarLink>\n-Usar essa tool, para gerar o link do agendamento do cliente;\n\nModo de uso:\nenvie um JSON no mesmo modelo abaixo:\n{\n    \"establishment_id\": 1,\n    \"phone\": \"{{ $('Filtra os dados').item.json.cliente.Numero }}\"\n}\n\nObservação 1:\nApenas busque retornar ao cliente o link do campo \"login_url\"\n\nObservação 2:\nCaso o cliente já tenha um cadastro, NÃO efetue um novo cadastro, apenas use a tool \"gerarLink\"\n\nObservação 3:\nNÃO envie nenhum comentário, nem antes nem depois, apenas o link do campo \"login_url\"\n\nObservação 4:\nSempre gerar um novo link caso o cliente fizer outro agendamento ou reagendamento. \n<uso_da_tool_gerarLink>\n\n<reagendar>\nQuando o cliente quiser reagendar um horário, utilize novamente a tool \"gerarLink\", retornando ao cliente apenas o campo \"login_url\" diretamente ao cliente.\n\nObservação 1:\nNÃO diga nada, não pergunte horário, nem comente nada nem antes nem depois de retornar o link, APENAS disponibilize o link e seja educado.\n\nObservação 2:\nNÃO tente coletar as informações do cliente novamente, apenas retorne o campo \"login_url\".\n<reagendar>\n\n<tool_consultar_agendamentos>\nUtilize a tool \"consultar_agendamentos\" para consultar todos os agendamentos de cada cliente SOMENTE quando for requisitado, retorne apenas os campos \"start_datetime\" e \"description\" para o cliente.\n\nObservação 1:\nNÃO comente nada, nem antes nem depois que lhe for pedido os horários de agendamento, apenas retorne \"start_datetime\" e \"description\" para o cliente. \n<tool_consultar_agendamentos>"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        608,
+        560
+      ],
+      "id": "f97990ee-d95d-4965-b1e7-971ff6dcd7a7",
+      "name": "AtendentePrincipal"
+    },
+    {
+      "parameters": {
+        "content": "## Cadastro de cliente\n## Gera Link do Agendamento\n## Consulta Agenda AI\n## Gera Link de Reagendar",
+        "height": 240,
+        "width": 1136,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        1120
+      ],
+      "id": "fa96b86a-7b9d-4e9b-83d9-1e4ce00ba1c6",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "toolDescription": "=Use essa ferramenta APENAS se o cliente já for cadastrado.\n\nEssa TOOL serve para gerar o link de agendamento que o cliente precisará acessar por conta própria.\n\nObservação:\nApenas buscar o link do campo \"login_url\"",
+        "method": "POST",
+        "url": "https://quickaiagenda.com.br/api/appointment-hash/generate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "SUA_QUICKAI_AGENDA_API_KEY_AQUI"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ (() => {   let ai = $fromAI('JSON', '', 'json');  \n\nif (typeof ai === 'string') {     try { ai = JSON.parse(ai); } catch (e) { return ai; }   }      \nif (Array.isArray(ai)) {     if (ai[0]?.JSON) ai = ai[0].JSON;     else ai = ai[0];   }       if (ai?.JSON) ai = ai.JSON;       return JSON.stringify(ai); })() }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        672,
+        1216
+      ],
+      "id": "6e492e0e-d709-43c1-aa02-b26b7eca1394",
+      "name": "gerarLink"
+    },
+    {
+      "parameters": {
+        "toolDescription": "=Utilize essa tool para consultar todos os agendamentos de cada cliente, retorne apenas os campos \"start_datetime\" e \"description\" para o cliente.\n\nModo de uso:\nDeve enviar para a tool \"Agendamentos\" o JSON nesse formato:\n{\n  \"phone\": \"{{ $('Filtra os dados').item.json.cliente.Numero }}\",\n  \"establishment_id\": 1\n}",
+        "method": "POST",
+        "url": "https://quickaiagenda.com.br/api/client/appointments",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "SUA_QUICKAI_AGENDA_API_KEY_AQUI"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ (() => {   let ai = $fromAI('JSON', '', 'json');  \n\nif (typeof ai === 'string') {     try { ai = JSON.parse(ai); } catch (e) { return ai; }   }      \nif (Array.isArray(ai)) {     if (ai[0]?.JSON) ai = ai[0].JSON;     else ai = ai[0];   }       if (ai?.JSON) ai = ai.JSON;       return JSON.stringify(ai); })() }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        1216
+      ],
+      "id": "1cf93045-63fd-4e94-8dc6-b3facf5671fc",
+      "name": "consultar_agendamentos"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "1c2c572d-3b7b-4a1e-8d4b-c4180de996c5",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -80,
+        80
+      ],
+      "id": "6f2046d2-deaf-4f92-8297-3a882525e2eb",
+      "name": "Recebe Mensagem",
+      "webhookId": "1c2c572d-3b7b-4a1e-8d4b-c4180de996c5"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Filtra os dados": {
+      "main": [
+        [
+          {
+            "node": "Pega os dados do Cliente1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Converte o base64 em audio": {
+      "main": [
+        [
+          {
+            "node": "Transcreve audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Converte o base64 em audio1": {
+      "main": [
+        [
+          {
+            "node": "Analisa Imagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pega base64 audio": {
+      "main": [
+        [
+          {
+            "node": "Converte o base64 em audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unifica os dados": {
+      "main": [
+        [
+          {
+            "node": "RegistraMensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analisa Imagem": {
+      "main": [
+        [
+          {
+            "node": "Unifica os dados",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Transcreve audio": {
+      "main": [
+        [
+          {
+            "node": "Unifica os dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tipagem de mensagem": {
+      "main": [
+        [
+          {
+            "node": "Pega base64 audio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "MensagemTexto",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pega base64 audio1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BuscaMensagem": {
+      "main": [
+        [
+          {
+            "node": "verificaSeTemMaisMensagens",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RegistraMensagem": {
+      "main": [
+        [
+          {
+            "node": "BuscaMensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "verificaSeTemMaisMensagens": {
+      "main": [
+        [
+          {
+            "node": "limpando os testes de fluxo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Espera8Segundos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "VerificaMensagem": {
+      "main": [
+        [
+          {
+            "node": "OrganizaMensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OrganizaMensagem": {
+      "main": [
+        [
+          {
+            "node": "limpa a fila",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MensagemTexto": {
+      "main": [
+        [
+          {
+            "node": "Unifica os dados",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AtendentePrincipal",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AtendentePrincipal",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "limpa a fila": {
+      "main": [
+        [
+          {
+            "node": "AtendentePrincipal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "limpando os testes de fluxo": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SeparandoMensagemEmPartes": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "envia uma mensagem por vez",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "envia uma mensagem por vez",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EnviarespostaAoCliente": {
+      "main": [
+        [
+          {
+            "node": "Espera 3 segundo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Espera8Segundos": {
+      "main": [
+        [
+          {
+            "node": "VerificaMensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "envia uma mensagem por vez": {
+      "main": [
+        [],
+        [
+          {
+            "node": "EnviarespostaAoCliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cadastra o cliente": {
+      "main": [
+        [
+          {
+            "node": "Tipagem de mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "checarCliente": {
+      "main": [
+        [
+          {
+            "node": "cadastra o cliente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Tipagem de mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Espera 3 segundo": {
+      "main": [
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pega os dados do Cliente1": {
+      "main": [
+        [
+          {
+            "node": "checarCliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pega base64 audio1": {
+      "main": [
+        [
+          {
+            "node": "Converte o base64 em audio1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cadastro": {
+      "ai_tool": [
+        [
+          {
+            "node": "AtendentePrincipal",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "consulta cliente": {
+      "ai_tool": [
+        [
+          {
+            "node": "AtendentePrincipal",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AtendentePrincipal": {
+      "main": [
+        [
+          {
+            "node": "SeparandoMensagemEmPartes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gerarLink": {
+      "ai_tool": [
+        [
+          {
+            "node": "AtendentePrincipal",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "consultar_agendamentos": {
+      "ai_tool": [
+        [
+          {
+            "node": "AtendentePrincipal",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recebe Mensagem": {
+      "main": [
+        [
+          {
+            "node": "Filtra os dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "errorWorkflow": "6EActTfn4RW82RNX"
+  },
+  "versionId": "cee2a3b0-f4e8-4464-a653-c137ae9ea971",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9c92701cdb48281154ad624eeeca4a6739a2b2ed112fc4a143ad41555270a5c0"
+  },
+  "id": "6EActTfn4RW82RNX",
+  "tags": [
+    {
+      "updatedAt": "2025-11-17T22:36:46.610Z",
+      "createdAt": "2025-11-17T22:36:46.610Z",
+      "id": "JSSRe4aPyYkJEb3z",
+      "name": "clinical_agent"
+    }
+  ]
+}
